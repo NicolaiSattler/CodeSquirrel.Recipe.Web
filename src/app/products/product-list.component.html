@@ -1,0 +1,62 @@
+<div class="container">
+
+    <div class="page-header">
+
+        <h3>Product Overzicht</h3>
+
+    </div>
+
+    <div class="btn-group">
+
+        <button type="button" class="btn btn-primary btn-sm" (click)='Add()'>Toevoegen</button>
+        
+        <button type="button" class="btn btn-primary btn-sm" (click)='Edit()'>Wijzigen</button>
+        
+        <button type="button" class="btn btn-primary btn-sm" (click)='Remove()'>Verwijderen</button>
+
+    </div>
+        
+    <div class="row">
+
+        <div class="col-sm-12">
+
+            <table class="container table table-hover">
+
+                <thead>
+
+                    <tr>
+                        <th>Naam</th>
+
+                        <th>Type</th>
+
+                        <th>Bederfelijk</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <!-- <tr ng-repeat="product in vm.ProductCollection" ng-click="vm.SelectItem(product)" ng-class="{ 'info' : vm.SelectedItem.Id === product.Id}">
+
+                        <td>{{ product.Name }}</td>
+
+                        <td>{{ product.TypeFlag }}</td>
+
+                        <td>
+
+                            <input type="checkbox" ng-checked="product.Perishable" />
+
+                        </td>
+
+                    </tr> -->
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
