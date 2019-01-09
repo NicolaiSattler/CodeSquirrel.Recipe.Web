@@ -1,11 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 @Component({
     selector: 'app-product-list',
-    templateUrl: './product-list.component.html'
+    templateUrl: './product-list.component.html',
+    host: {
+        class: 'container'
+    }
 })
 
-export class ProductListComponent implements OnInit{
+export class ProductListComponent implements OnInit {
     pageTitle: string = 'Product Overzicht';
     
     public Add(): void {

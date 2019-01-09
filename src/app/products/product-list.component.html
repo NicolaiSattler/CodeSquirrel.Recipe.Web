@@ -1,61 +1,64 @@
-<div class="container">
+<div class="row">
 
-    <div class="page-header">
-
+    <div class="page-header col-sm-12">
+        
         <h3>Product Overzicht</h3>
-
+        
     </div>
+</div>
 
-    <div class="btn-group">
+<div class="row">
 
+    <div class="btn-group col-sm-12">
+        
         <button type="button" class="btn btn-primary btn-sm" (click)='Add()'>Toevoegen</button>
         
         <button type="button" class="btn btn-primary btn-sm" (click)='Edit()'>Wijzigen</button>
         
         <button type="button" class="btn btn-primary btn-sm" (click)='Remove()'>Verwijderen</button>
-
-    </div>
         
-    <div class="row">
+    </div>
 
-        <div class="col-sm-12">
+</div>
+    
+<div class="row">
 
-            <table class="container table table-hover">
+    <div class="col-sm-12">
 
-                <thead>
+        <table class="container table table-hover">
 
-                    <tr>
-                        <th>Naam</th>
+            <thead>
 
-                        <th>Type</th>
+                <tr>
+                    <th>Naam</th>
 
-                        <th>Bederfelijk</th>
+                    <th>Type</th>
 
-                    </tr>
+                    <th>Bederfelijk</th>
 
-                </thead>
+                </tr>
 
-                <tbody>
+            </thead>
 
-                    <!-- <tr ng-repeat="product in vm.ProductCollection" ng-click="vm.SelectItem(product)" ng-class="{ 'info' : vm.SelectedItem.Id === product.Id}">
+            <tbody>
 
-                        <td>{{ product.Name }}</td>
+                <!-- <tr ng-repeat="product in vm.ProductCollection" ng-click="vm.SelectItem(product)" ng-class="{ 'info' : vm.SelectedItem.Id === product.Id}">
 
-                        <td>{{ product.TypeFlag }}</td>
+                    <td>{{ product.Name }}</td>
 
-                        <td>
+                    <td>{{ product.TypeFlag }}</td>
 
-                            <input type="checkbox" ng-checked="product.Perishable" />
+                    <td>
 
-                        </td>
+                        <input type="checkbox" ng-checked="product.Perishable" />
 
-                    </tr> -->
+                    </td>
 
-                </tbody>
+                </tr> -->
 
-            </table>
+            </tbody>
 
-        </div>
+        </table>
 
     </div>
 
