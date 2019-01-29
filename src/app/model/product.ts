@@ -1,10 +1,14 @@
-export class Product{
+export class Product implements IProduct {
+    private _uniqueID: string;
     private _name : string;
     private _type : ProductType;
     private _perishable: boolean;
     private _deleted: boolean;
     private _modified: boolean;
 
+    public get UniqueID(): string {
+        return this._uniqueID;
+    }
     public get Name(): string{
         return this._name;
     }
@@ -17,6 +21,9 @@ export class Product{
     public set Type(value: ProductType){
         this._type = value;
     }
+    public get TypeFlag(): string {
+        return ProductType[this._type];
+    }
     public get Perishable(): boolean{
         return this._perishable;
     }
@@ -27,6 +34,13 @@ export class Product{
     constructor() {
         
     }
+}
+
+export interface IProduct {
+    UniqueID: string;
+    Name : string;
+    Type : ProductType;
+    Perishable : boolean;
 }
 
 enum ProductType {
