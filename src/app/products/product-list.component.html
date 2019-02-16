@@ -1,92 +1,47 @@
-<div class="row">
-
-  <div class="page-header col-sm-12">
-
-    <h3>Product Overzicht</h3>
-
-  </div>
-</div>
-
-<div class="row">
-
-  <div class="btn-group col-sm-12">
-
-    <button type="button" class="btn btn-primary btn-sm" (click)='Add()'>Toevoegen</button>
-
-    <button type="button" class="btn btn-primary btn-sm" (click)='Edit()'>Wijzigen</button>
-
-    <button type="button" class="btn btn-primary btn-sm" (click)='Remove()'>Verwijderen</button>
-
-  </div>
-
-</div>
-
-<div class="row">
-
-  <div class="col-sm-12">
-
-    <div>
-      Filter:
+<div class='card'>
+  <div class='card-header'>Product Overzicht</div>
+  <div class='card-body'>
+    <div class="btn-toolbar mb-3 justify-content-between" role="toolbar">
+      <div class="btn-group btn-group-sm" role="group">
+        <button type="button" class="btn btn-primary btn-sm" (click)='Add()'>Toevoegen</button>
+        <button type="button" class="btn btn-primary btn-sm" (click)='Remove()'>Verwijderen</button>
+      </div>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <div class="input-group-text">Filter:</div>
+        </div>
+        <input type="text" class="form-control" placeholder="Voer zoekopdracht in..." [(ngModel)]='needle' />
+      </div>
     </div>
-
-    <div>
-
-        <input type="text" [(ngModel)]='needle' />
-    
+    <div class="row">
+      <div class="col-sm-12">
+        <table *ngIf="productCollection?.length > 0; else no_products_found_message" class="container table table-hover">
+          <thead>
+            <tr>
+              <th>Naam</th>
+              <th>Type</th>
+              <th>Bederfelijk</th>
+            </tr>
+          </thead>
+          <tbody >
+            <tr *ngFor='let product of filteredCollection'>
+              <!-- custom pipe test  -->
+              <td>
+                <a [routerLink]="['/products', product.UniqueID]">{{ product.Name }}</a>
+              </td>
+              <td>{{ product.TypeFlag }}</td>
+              <td>
+                <input type="checkbox" [(ngModel)]='product.Perishable' />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <ng-template #no_products_found_message>
+          <div class="alert alert-primary" role="alert">   
+            Er zijn geen producten gevonden
+          </div>
+        </ng-template>
+      </div>
     </div>
-
   </div>
-
-</div>
-
-<div class="row">
-
-  <div class="col-sm-12">
-
-    <table class="container table table-hover">
-
-      <thead>
-
-        <tr>
-
-          <th>Naam</th>
-
-          <th>Type</th>
-
-          <th>Bederfelijk</th>
-
-        </tr>
-
-      </thead>
-
-      <tbody>
-
-        <tr *ngFor='let product of filteredCollection'>
-          <!-- custom pipe test  -->
-          <td>
-
-            <a [routerLink]="['product', product.UniqueID]">
-
-                {{ product.Name }}
-            
-              </a>
-          
-          </td>
-
-          <td>{{ product.TypeFlag }}</td>
-
-          <td>
-
-            <input type="checkbox" [(ngModel)]='product.Perishable' />
-
-          </td>
-
-        </tr>
-
-      </tbody>
-
-    </table>
-
-  </div>
-
 </div>

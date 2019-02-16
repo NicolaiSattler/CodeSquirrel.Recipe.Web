@@ -1,39 +1,21 @@
-import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
-
-import { ConvertToSpacePipe } from './shared/convert-to-space.pipe';
+import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
-import { ProductListComponent } from './products/product-list.component';
-import { HttpClientModule } from '@angular/common/http';
-import { ProductDetailsComponent } from './products/product-details.component';
-import { WelcomeComponent } from './common/welcome/welcome.component';
+import { ProductModule } from './products/product.module';
+import { AppRoutingModule } from './app-routing.module';
 
 @NgModule({
   declarations: [
-    ConvertToSpacePipe,
-
-    AppComponent,
-    ProductListComponent,
-    ProductDetailsComponent,
-    WelcomeComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
-    FormsModule,
     HttpClientModule,
-    RouterModule.forRoot([
-      { path: 'products', component: ProductListComponent },
-      { path: 'products/:id', component: ProductDetailsComponent },
-      { path: 'welcome', component: WelcomeComponent },
-      { path: '', redirectTo: 'welcome', pathMatch: 'full'},
-      //TODO: replace with 404 page
-      { path: '**', redirectTo: 'welcome', pathMatch: 'full'} 
-    ])
+    ProductModule,
+    AppRoutingModule //Should always be last due to routing..
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
