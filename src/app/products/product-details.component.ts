@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IProduct } from '../model/product';
 import { ProductService } from './product.service';
+import { IKeyValue } from '../model/keyvalue';
 
 @Component({
   templateUrl: './product-details.component.html',
@@ -20,6 +21,9 @@ export class ProductDetailsComponent implements OnInit {
   } 
   public get product() : IProduct{
     return this._product;
+  }
+  public get productTypes() : IKeyValue[] {
+    return this._service.getProductTypes();
   }
 
   constructor(private route: ActivatedRoute, private router: Router, private _service : ProductService) { 

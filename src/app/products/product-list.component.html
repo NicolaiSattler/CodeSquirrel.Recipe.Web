@@ -29,7 +29,7 @@
               <td>
                 <a [routerLink]="['/products', product.UniqueID]">{{ product.Name }}</a>
               </td>
-              <td>{{ product.TypeFlag }}</td>
+              <td>{{ product.Type }}</td>
               <td>
                 <input type="checkbox" [(ngModel)]='product.Perishable' />
               </td>

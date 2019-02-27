@@ -13,8 +13,8 @@ import { ProductService } from './product.service';
 export class ProductListComponent implements OnInit {
     private _pageTitle: string;
     private _needle: string;
-    private _productCollection : IProduct[];
-    private _filteredCollection : IProduct[];
+    private _productCollection : Product[];
+    private _filteredCollection : Product[];
     private _errorMessage: any;
 
     constructor(private _service : ProductService) {
@@ -24,10 +24,10 @@ export class ProductListComponent implements OnInit {
     public get pageTitle() : string {
         return this._pageTitle;
     }
-    public get productCollection() : IProduct[] {
+    public get productCollection() : Product[] {
         return this._productCollection;
     }
-    public get filteredCollection(): IProduct[]{
+    public get filteredCollection(): Product[]{
         return this._filteredCollection;
     }
     public get needle() : string {
@@ -40,7 +40,7 @@ export class ProductListComponent implements OnInit {
             : this.productCollection;
     }
 
-    private filter(needle: string) : IProduct[]{
+    private filter(needle: string) : Product[]{
         needle = needle.toLocaleLowerCase();
         return this._productCollection.filter((product: IProduct) => product.Name.toLocaleLowerCase().indexOf(needle) !== -1);
     }
