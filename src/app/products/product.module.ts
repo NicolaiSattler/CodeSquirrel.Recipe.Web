@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ConvertToSpacePipe } from '../shared/convert-to-space.pipe';
 import { ProductListComponent } from './product-list.component';
 import { ProductDetailsComponent } from './product-details.component';
-import { ConvertToSpacePipe } from '../shared/convert-to-space.pipe';
 import { ProductRoutingModule } from './product-routing.module';
+import { ProductStateService } from './product-state.service';
 
 @NgModule({
   declarations: [
@@ -12,9 +13,13 @@ import { ProductRoutingModule } from './product-routing.module';
     ProductDetailsComponent,
     ConvertToSpacePipe
   ],
+  providers: [
+    ProductStateService
+  ],
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     ProductRoutingModule
   ]
 })

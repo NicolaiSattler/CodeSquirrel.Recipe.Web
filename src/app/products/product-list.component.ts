@@ -1,6 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Product, IProduct } from '../model/product';
-import { ProductService } from './product.service';
+import { ProductStateService } from './product-state.service';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-product-list',
@@ -13,55 +16,68 @@ import { ProductService } from './product.service';
 export class ProductListComponent implements OnInit {
     private _pageTitle: string;
     private _needle: string;
-    private _productCollection : Product[];
-    private _filteredCollection : Product[];
-    private _errorMessage: any;
+    private _isReady: boolean;
+    private _selectAllChecked: boolean;
+    private _productCollection$ : Observable<Product[]>;
+    private _filterProductCollection$ : Observable<Product[]>;
+    private _stateMessage: any;
 
-    constructor(private _service : ProductService) {
+    constructor(private $router: Router, private _service : ProductStateService) {
         this._pageTitle = 'Product Overzicht';
+        this._stateMessage = "Loading..."
     }
 
     public get pageTitle() : string {
         return this._pageTitle;
     }
-    public get productCollection() : Product[] {
-        return this._productCollection;
+    public get selectAllChecked(): boolean {
+        return this._selectAllChecked
     }
-    public get filteredCollection(): Product[]{
-        return this._filteredCollection;
+    public set selectAllChecked(v : boolean) {
+        this._selectAllChecked = v;       
+    }
+    public get isReady() :boolean {
+        return this._isReady;
+    }
+    public get stateMessage() : string {
+        return this._stateMessage;
+    }
+    public get productCollection$() : Observable<Product[]> {
+        return this._productCollection$;
+    }
+    public get filterProductCollection$() : Observable<Product[]> {
+        return this._filterProductCollection$;
+    }
+    public set filterProductCollection$(v : Observable<Product[]>) {
+        this._filterProductCollection$ = v;
+        this._isReady = true;
     }
     public get needle() : string {
         return this._needle;
     }
     public set needle(value : string){
         this._needle = value;
-        this._filteredCollection = this._needle 
-            ? this.filter(this._needle) 
-            : this.productCollection;
+        this.filter(this._needle);
     }
 
-    private filter(needle: string) : Product[]{
-        needle = needle.toLocaleLowerCase();
-        return this._productCollection.filter((product: IProduct) => product.Name.toLocaleLowerCase().indexOf(needle) !== -1);
+    private filter(needle: string) : void {
+        var cleanNeedle = needle.toLocaleLowerCase();
+        this.filterProductCollection$ = this.productCollection$.pipe(map(products => products.filter(p => p.Name.toLocaleLowerCase().indexOf(cleanNeedle) !== -1)));
     }
     public Add(): void {
-        
-    }
-    public Edit(): void {
-        
+        this.$router.navigate(['products', '', true]);
     }
     public Remove(): void {
-        
+
+    }
+    public SelectRow(uniqueID : string): void {
+
+    }
+    public SelectAll(): void {
     }
 
-    ngOnInit(): void {
-       this._service.getProduct().subscribe(
-           result => 
-           {
-               this._productCollection = result
-               this._filteredCollection = this._productCollection;
-           }, 
-           error => this._errorMessage = <any>error
-        );
+    ngOnInit(): void {   
+        this._productCollection$ = this._service.getProductCollection();
+        this.filterProductCollection$ = this._productCollection$;
     }
 }

@@ -16,8 +16,11 @@ export class ProductDetailGuard implements CanActivate {
     
     var regex = new RegExp(this.guidRegex);
     var id = next.url[1].path;
+    var isValidID = regex.test(id);
+    var isNew = next.url[2].path;
+    var canRoute = (isValidID || isNew == 'true');
 
-    if (regex.test(id) == false){
+    if (!canRoute){
       this.router.navigate(['/products']);
       return false;
     }
