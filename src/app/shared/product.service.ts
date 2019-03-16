@@ -13,14 +13,18 @@ export class ProductHttpService {
     private _getAllUrl: string;
     private _getCreate: string;
     private _getByIDUrl : string;
-    private _getTypes : string;
+    private _getTypesUrl : string;
+    private _insertUrl : string;
+    private _updateUrl : string;
 
     constructor(private $client: HttpClient) {
         this._rootUrl = 'http://localhost:5000/api/'
         this._getAllUrl = 'Product/GetAll';
         this._getCreate = 'Product/Create';
         this._getByIDUrl = 'Product/GetByID';
-        this._getTypes = 'Product/GetTypes';
+        this._getTypesUrl = 'Product/GetTypes';
+        this._insertUrl = 'Product/Insert';
+        this._updateUrl = 'Product/Update';
     }
 
     public getProduct() : Observable<Product[]>{
@@ -43,9 +47,19 @@ export class ProductHttpService {
     }
 
     public getProductTypes(): Observable<IKeyValue[]> {
-        var url = `${this._rootUrl}${this._getTypes}`;
+        var url = `${this._rootUrl}${this._getTypesUrl}`;
         return this.$client.get<IKeyValue[]>(url)
                     .pipe(catchError(this.handleError));
+    }
+    public insert(product: IProduct): Observable<boolean> {
+        var url = `${this._rootUrl}${this._insertUrl}`;
+        return this.$client.post<boolean>(url, product)
+                           .pipe(catchError(this.handleError));
+    }
+    public update(product: IProduct):Observable<boolean> {
+        var url = `${this._rootUrl}${this.update}`;
+        return this.$client.post<boolean>(url, product)
+                           .pipe(catchError(this.handleError));
     }
 
     private handleError(response: HttpErrorResponse){

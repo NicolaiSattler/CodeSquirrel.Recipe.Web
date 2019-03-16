@@ -18,8 +18,8 @@ export class ProductListComponent implements OnInit {
     private _needle: string;
     private _isReady: boolean;
     private _selectAllChecked: boolean;
-    private _productCollection$ : Observable<Product[]>;
-    private _filterProductCollection$ : Observable<Product[]>;
+    private _productCollection$ : Observable<IProduct[]>;
+    private _filterProductCollection$ : Observable<IProduct[]>;
     private _stateMessage: any;
 
     constructor(private $router: Router, private _service : ProductStateService) {
@@ -42,13 +42,13 @@ export class ProductListComponent implements OnInit {
     public get stateMessage() : string {
         return this._stateMessage;
     }
-    public get productCollection$() : Observable<Product[]> {
+    public get productCollection$() : Observable<IProduct[]> {
         return this._productCollection$;
     }
-    public get filterProductCollection$() : Observable<Product[]> {
+    public get filterProductCollection$() : Observable<IProduct[]> {
         return this._filterProductCollection$;
     }
-    public set filterProductCollection$(v : Observable<Product[]>) {
+    public set filterProductCollection$(v : Observable<IProduct[]>) {
         this._filterProductCollection$ = v;
         this._isReady = true;
     }

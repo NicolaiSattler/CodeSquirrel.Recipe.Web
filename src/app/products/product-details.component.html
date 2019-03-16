@@ -5,22 +5,27 @@
   <div class='card-body'>
     <div class="btn-toolbar mb-3 justify-content-between" role="toolbar">
       <div class="btn-group btn-group-sm" role="group">
-        <button *ngIf="isNew" type="button" class="btn btn-primary btn-sm" (click)='Remove()'>Verwijderen</button>
-        <button type="button" class="btn btn-primary btn-sm" (click)='Save()'>Opslaan</button>
+        <button *ngIf="isNew === false" type="button" class="btn btn-primary" (click)='onRemove()'>Remove</button>
+        <button type="button" class="btn btn-primary" (click)='onSave()'>Save</button>
       </div>
     </div>
     <form>
       <div class='form-group row'>
         <label for="name" class="col-sm-2 col-form-label">Naam</label>
         <div class="col-sm-10">
-          <input id="name" type="text" [value]="(product$ | async)?.Name" class="form-control" placeholder="Naam.." />
+          <input id="name" type="text" [ngModel]="(product$ | async)?.Name" (ngModelChange)="changeName($event)" class="form-control" placeholder="Naam.." />
         </div>
       </div>
       <div class='form-group row'>
         <label for="type" class="col-sm-2 col-form-label">Type</label>
         <div class="col-sm-10">
-          <select id="type" class="form-control" [value]="(product$ | async)?.Type">
-            <option *ngFor="let item of productTypes" [value]="item.Key" [selected]="item.Key == product$.Type">
+
+            <!-- https://stackoverflow.com/questions/48028154/two-way-bind-single-object-observable -->
+
+
+
+          <select id="type" class="form-control" [ngModel]="(product$ | async)?.Type">
+            <option *ngFor="let item of productTypes$ | async" [value]="item.Key" [selected]="item.Key == product$.Type">
               {{ item.Value }}
             </option>
           </select>
