@@ -1,6 +1,7 @@
-import { Component, OnInit, KeyValueChanges, KeyValueDiffer, KeyValueDiffers } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { IProduct } from '../model/product';
 import { IKeyValue } from '../model/keyvalue';
 import { ProductStateService } from './product-state.service';
@@ -13,128 +14,95 @@ import { ProductStateService } from './product-state.service';
   }
 })
 export class ProductDetailsComponent implements OnInit {
-  private _pageTitle: string;
-  private _errorMessage: string;
-  private _state: string;
-  private _isNew: boolean;
-  private _isModified: boolean;
-  private _isSaving: boolean;
-  private _isSaved: boolean;
-  private _hasError: boolean;
-  private _product: Observable<IProduct>;
-  //private _productDiffer: KeyValueDiffer<string, any>;
-  private _productTypes: Observable<IKeyValue[]>;
-
-  public get pageTitle() : string {
-    return this._pageTitle;
+  
+  private nameValueControlSubscriber: Subscription;
+ 
+  public pageTitle: string;
+  public product$: Observable<IProduct>
+  public productTypes$ : Observable<IKeyValue[]>
+  public isNew : boolean;
+  public state : string;
+  public nameErrorMessage : string;
+  public productForm: FormGroup;
+  public get nameControl() : AbstractControl {
+    return this.productForm.get('nameControl');
   }
-  public get product$() : Observable<IProduct>{
-    return this._product;
+  public get typeControl() : AbstractControl { 
+    return this.productForm.get('typeControl');
   }
-  public get productTypes$() : Observable<IKeyValue[]> {
-    return this._productTypes;
-  }
-  public get errorMessage(): string {
-    return this._errorMessage;
-  }
-  public set errorMessage(v : string){
-    this._errorMessage = v;
-    if (v && v != ''){
-      this._hasError = true;
+  public get nameValidationMessages() : any {
+    return {
+      required: "Please enter a product name.",
+      maxLength: "The product name is to long (256)."
     }
   }
-  public get isNew() : boolean {
-    return this._isNew;
-  }
-  public get isModified() : boolean {
-    return this._isModified;
-  }
-  public get hasError(): boolean{
-    return this._hasError;
-  }
-  public get isSaving() : boolean {
-    return this._isSaving;
-  }
-  public get isSaved() : boolean {
-    return this._isSaved;
-  }
-  public get state() : string {
-    return this._state;
-  }
-
+  
   constructor(private $route: ActivatedRoute, 
               private $router: Router,
-              //private $differs: KeyValueDiffers, 
+              private $formBuilder: FormBuilder,
               private _service : ProductStateService) {
 
-
-    //Lees het volgende artikel
-    //https://blog.angular-university.io/introduction-to-angular-2-forms-template-driven-vs-model-driven/
-
-
-
-
-    //https://medium.com/@amcdnl/reactive-angular-forms-with-ngrx-533a2f28c127     
-
-
-
-    this._pageTitle = "Product Details"
-  }
+    this.pageTitle = "Product Details"
+  } 
   
   private initialize(id: any){
-    this._productTypes = this._service.getProductTypes();
+    this.productTypes$ = this._service.getProductTypes();
 
-    if (id && !this._isNew){
-      var result = this._service.getProductByID(id);
+    if (id && !this.isNew){
+      let result = this._service.getProductByID(id);
       
       if (result) {       
-        this._product = result;
-        //this._productDiffer = this.$differs.find(this._product).create();
+        this.product$ = result;
+        this.populateData();
       }
       else {
-        this._pageTitle = 'No product found...';  
+        this.pageTitle = 'No product found...';  
       }
       return;
     }
     
-    if (this._isNew) {
-      var result = this._service.createProduct();
-      this._pageTitle = 'Create a new product.';
-      this._isNew = true;
+    if (this.isNew) {
+      let result = this._service.createProduct();
+      this.pageTitle = 'Create a new product.';
       
       if (result){
-        this._product = result; 
-        //this._productDiffer = this.$differs.find(this._product).create();
+        this.product$ = result; 
+        this.populateData();
       }
+    }
+  }
+  private populateData() : void {
+    let subscriber = this.product$.subscribe((product) => {
+      this.productForm.setValue({
+        nameControl: product.Name,
+        typeControl: product.Type,
+        perishableControl: product.Perishable
+      });
+    });
+
+    subscriber.unsubscribe();
+  }
+  private setNameErrorMessage(value: string): void {
+    this.nameErrorMessage = '';
+    if ((this.nameControl.touched || this.nameControl.dirty) && this.nameControl.errors){
+      this.nameErrorMessage = Object.keys(this.nameControl.errors)
+                                    .map(key => this.nameErrorMessage += this.nameValidationMessages[key])
+                                    .join(' ');
     }
   }
   private navigateToProductList() : void {
     this.$router.navigate(['/products']);
   }
-  // private productChanged(changes: KeyValueChanges<string, any>) {
-  //   this._isModified = true;
-  // }
-  public changeName(value : any) : void {
-    console.log("Name is:" + value);
-  }
-  public changeType(value : any) : void {
-    console.log("Type is:" + value);
-  }
-
   public onSave() : void {
-    this._isSaving = true;
-
-    var productSub = this._product.subscribe(product => { 
-      var saveProductSub = this._service.saveProduct(product, this.isNew)
+    let productSub = this._product.subscribe(product => { 
+      let saveProductSub = this._service.saveProduct(product, this.isNew)
                    .subscribe(result => {
                      if (result == true){
                        this._state = "The product has been saved."
-                       this._isSaved = true;
                       } else this._state = "The product could not be saved."
-                      this._isSaving = false;
-                   }, error => this.errorMessage = error);
+                   });
       saveProductSub.unsubscribe();
-    }, error => this.errorMessage = error);
+    });
 
     productSub.unsubscribe();
   }
@@ -145,22 +113,21 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   ngOnInit() : void {
-    var id = this.$route.snapshot.paramMap.get('id');
+    let id = this.$route.snapshot.paramMap.get('id');  
+    let isNewParam = this.$route.snapshot.paramMap.get('isnew');
     
-    var isNewParam = this.$route.snapshot.paramMap.get('isnew');
+    this.isNew = isNewParam == 'true' ? true : false;
+    this.productForm = this.$formBuilder.group({
+      nameControl: ['', [Validators.required, Validators.maxLength(256)]],
+      typeControl: ['', [Validators.required]],
+      perishableControl: false
+    });
 
-    this._isNew = isNewParam == 'true' ? true : false;
-    
+    this.nameValueControlSubscriber = this.nameControl.valueChanges.subscribe(value => this.setNameErrorMessage(value));
+     
     this.initialize(id);    
   }
-  //TODO: https://netbasal.com/angular-2-improve-performance-with-trackby-cc147b5104e5
-  // ngDoCheck() : void {
-  //   if (!this._productDiffer) return;
-    
-  //   const changes = this._productDiffer.diff(this._product);
-    
-  //   if (changes){
-  //     this.productChanged(changes);
-  //   }
-  // }
+  ngOnDestroy() : void {
+    this.nameValueControlSubscriber.unsubscribe();
+  }
 }

@@ -61,7 +61,7 @@ export class ProductListComponent implements OnInit {
     }
 
     private filter(needle: string) : void {
-        var cleanNeedle = needle.toLocaleLowerCase();
+        let cleanNeedle = needle.toLocaleLowerCase();
         this.filterProductCollection$ = this.productCollection$.pipe(map(products => products.filter(p => p.Name.toLocaleLowerCase().indexOf(cleanNeedle) !== -1)));
     }
     public Add(): void {

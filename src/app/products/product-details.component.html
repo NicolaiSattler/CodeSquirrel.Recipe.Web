@@ -5,30 +5,54 @@
   <div class='card-body'>
     <div class="btn-toolbar mb-3 justify-content-between" role="toolbar">
       <div class="btn-group btn-group-sm" role="group">
-        <button *ngIf="isNew === false" type="button" class="btn btn-primary" (click)='onRemove()'>Remove</button>
-        <button type="button" class="btn btn-primary" (click)='onSave()'>Save</button>
+        <button *ngIf="isNew === false" type="button" class="btn btn-primary" (click)='onRemove()'>
+          Remove
+        </button>
+        <button type="button" class="btn btn-primary" [title]="productForm.valid ? 'Save product.' : 'Disabled untill form data is valid'"
+          [disabled]="!productForm.valid" (click)='onSave()'>
+          Save
+        </button>
       </div>
     </div>
-    <form>
+    <form [formGroup]="productForm">
       <div class='form-group row'>
-        <label for="name" class="col-sm-2 col-form-label">Naam</label>
+        <label for="name" class="col-sm-2 col-form-label">
+          Naam
+        </label>
         <div class="col-sm-10">
-          <input id="name" type="text" [ngModel]="(product$ | async)?.Name" (ngModelChange)="changeName($event)" class="form-control" placeholder="Naam.." />
+          <input id="name" type="text" class="form-control" placeholder="Name.." formControlName="nameControl"
+            [ngClass]="{'is-valid': emailMessage }" />
+          <span class="invalid-feedback">
+
+          </span>
         </div>
       </div>
       <div class='form-group row'>
-        <label for="type" class="col-sm-2 col-form-label">Type</label>
+        <label for="type" class="col-sm-2 col-form-label">
+          Type
+        </label>
         <div class="col-sm-10">
-
-            <!-- https://stackoverflow.com/questions/48028154/two-way-bind-single-object-observable -->
-
-
-
-          <select id="type" class="form-control" [ngModel]="(product$ | async)?.Type">
+          <select id="type" class="form-control" placeholder="Producttype.." formControlName="typeControl"
+            [ngClass]="{'is-valid': (typeControl.touched || typeControl.dirty) && !typeControl.valid }">
             <option *ngFor="let item of productTypes$ | async" [value]="item.Key" [selected]="item.Key == product$.Type">
               {{ item.Value }}
             </option>
           </select>
+          <span class="invalid-feedback">
+            <span *ngIf="nameControl.errors?.required">
+              Please enter a product type.
+            </span>
+          </span>
+        </div>
+        <div class='form-group row'>
+          <div class='form-group row'>
+            <label for="perishable" class="col-sm-2 col-form-label">
+              Perishables
+            </label>
+            <div class="col-sm-10">
+              <input id="perishable" type="checkbox" class="form-control" required formControlName="perishabledControl" />
+            </div>
+          </div>
         </div>
       </div>
     </form>
