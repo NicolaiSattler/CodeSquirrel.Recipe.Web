@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ConvertToSpacePipe } from '../shared/convert-to-space.pipe';
 import { ProductListComponent } from './product-list.component';
 import { ProductDetailsComponent } from './product-details.component';
@@ -18,7 +18,7 @@ import { ProductStateService } from './product-state.service';
   ],
   imports: [
     CommonModule,
-    ReactiveFormsModule,
+    FormsModule,
     ReactiveFormsModule,
     ProductRoutingModule
   ]

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Product, IProduct } from '../model/product';
+import { IProduct } from '../model/product';
 import { ProductStateService } from './product-state.service';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -8,9 +8,7 @@ import { Router } from '@angular/router';
 @Component({
     selector: 'app-product-list',
     templateUrl: './product-list.component.html',
-    host: {
-        class: 'container'
-    }
+    host: { class: 'container' }
 })
 
 export class ProductListComponent implements OnInit {
@@ -24,45 +22,46 @@ export class ProductListComponent implements OnInit {
 
     constructor(private $router: Router, private _service : ProductStateService) {
         this._pageTitle = 'Product Overzicht';
-        this._stateMessage = "Loading..."
+        this._stateMessage =  'Loading...';
     }
 
-    public get pageTitle() : string {
+    public get pageTitle(): string {
         return this._pageTitle;
     }
     public get selectAllChecked(): boolean {
-        return this._selectAllChecked
+        return this._selectAllChecked;
     }
-    public set selectAllChecked(v : boolean) {
-        this._selectAllChecked = v;       
+    public set selectAllChecked(v: boolean) {
+        this._selectAllChecked = v;
     }
-    public get isReady() :boolean {
+    public get isReady(): boolean {
         return this._isReady;
     }
-    public get stateMessage() : string {
+    public get stateMessage(): string {
         return this._stateMessage;
     }
-    public get productCollection$() : Observable<IProduct[]> {
+    public get productCollection$(): Observable<IProduct[]> {
         return this._productCollection$;
     }
-    public get filterProductCollection$() : Observable<IProduct[]> {
+    public get filterProductCollection$(): Observable<IProduct[]> {
         return this._filterProductCollection$;
     }
-    public set filterProductCollection$(v : Observable<IProduct[]>) {
+    public set filterProductCollection$(v: Observable<IProduct[]>) {
         this._filterProductCollection$ = v;
         this._isReady = true;
     }
-    public get needle() : string {
+    public get needle(): string {
         return this._needle;
     }
-    public set needle(value : string){
+    public set needle(value: string) {
         this._needle = value;
         this.filter(this._needle);
     }
 
-    private filter(needle: string) : void {
-        let cleanNeedle = needle.toLocaleLowerCase();
-        this.filterProductCollection$ = this.productCollection$.pipe(map(products => products.filter(p => p.Name.toLocaleLowerCase().indexOf(cleanNeedle) !== -1)));
+    private filter(needle: string): void {
+        const cleanNeedle = needle.toLocaleLowerCase();
+        this.filterProductCollection$ = this.productCollection$.pipe(
+            map(products => products.filter(p => p.Name.toLocaleLowerCase().indexOf(cleanNeedle) !== -1)));
     }
     public Add(): void {
         this.$router.navigate(['products', '', true]);
@@ -70,13 +69,13 @@ export class ProductListComponent implements OnInit {
     public Remove(): void {
 
     }
-    public SelectRow(uniqueID : string): void {
+    public SelectRow(uniqueID: string): void {
 
     }
     public SelectAll(): void {
     }
 
-    ngOnInit(): void {   
+    ngOnInit(): void {
         this._productCollection$ = this._service.getProductCollection();
         this.filterProductCollection$ = this._productCollection$;
     }

@@ -10,7 +10,7 @@ import { ProductDetailsComponent } from './product-details.component';
     CommonModule,
     RouterModule.forChild([
       { path: 'products', component: ProductListComponent },
-      { 
+      {
         path: 'products/:id/:isnew',
         canActivate: [ ProductDetailGuard ], 
         component: ProductDetailsComponent

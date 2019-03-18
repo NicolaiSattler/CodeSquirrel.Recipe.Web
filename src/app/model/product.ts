@@ -1,7 +1,7 @@
 export class Product implements IProduct {
     private _uniqueID: string;
-    private _name : string;
-    private _type : number;
+    private _name: string;
+    private _type: number;
     private _perishable: boolean;
     private _deleted: boolean;
     private _modified: boolean;
@@ -9,33 +9,31 @@ export class Product implements IProduct {
     public get UniqueID(): string {
         return this._uniqueID;
     }
-    public get Name(): string{
+    public get Name(): string {
         return this._name;
     }
-    public set Name(value: string){
+    public set Name(value: string) {
         this._name = value;
     }
-    public get Type(): number{
+    public get Type(): number {
         return this._type;
     }
-    public set Type(value: number){
+    public set Type(value: number) {
         this._type = value;
     }
-    public get Perishable(): boolean{
+    public get Perishable(): boolean {
         return this._perishable;
     }
-    public set Perishable(value: boolean){
+    public set Perishable(value: boolean) {
         this._perishable = value;
     }
 
-    constructor() {
-        
-    }
+    constructor() { }
 }
 
 export interface IProduct {
     UniqueID: string;
-    Name : string;
-    Type : number;
-    Perishable : boolean;
+    Name: string;
+    Type: number;
+    Perishable: boolean;
 }

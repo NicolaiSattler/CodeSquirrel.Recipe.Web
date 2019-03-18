@@ -19,9 +19,9 @@
           <thead>
             <tr>
               <!-- <th><input type="checkbox"  [(ngModel)]="selectAllChecked" [ngModelOptions]="{standalone: true}"/></th> -->
-              <th>Naam</th>
+              <th>Name</th>
               <th>Type</th>
-              <th>Bederfelijk</th>
+              <th>Perishable</th>
             </tr>
           </thead>
           <tbody >
@@ -34,7 +34,7 @@
               </td>
               <td>{{ product.Type }}</td>
               <td>
-                <input type="checkbox" [(ngModel)]='product.Perishable' />
+                <input type="checkbox" />
               </td>
             </tr> 
           </tbody>

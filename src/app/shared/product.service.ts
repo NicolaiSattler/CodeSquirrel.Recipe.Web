@@ -11,16 +11,16 @@ import { IKeyValue } from '../model/keyvalue';
 export class ProductHttpService {
     private _rootUrl: string;
     private _getAllUrl: string;
-    private _getCreate: string;
-    private _getByIDUrl : string;
-    private _getTypesUrl : string;
-    private _insertUrl : string;
-    private _updateUrl : string;
+    private _getCreateUrl: string;
+    private _getByIDUrl: string;
+    private _getTypesUrl: string;
+    private _insertUrl: string;
+    private _updateUrl: string;
 
     constructor(private $client: HttpClient) {
         this._rootUrl = 'http://localhost:5000/api/'
         this._getAllUrl = 'Product/GetAll';
-        this._getCreate = 'Product/Create';
+        this._getCreateUrl = 'Product/Create';
         this._getByIDUrl = 'Product/GetByID';
         this._getTypesUrl = 'Product/GetTypes';
         this._insertUrl = 'Product/Insert';
@@ -28,43 +28,40 @@ export class ProductHttpService {
     }
 
     public getProduct() : Observable<Product[]>{
-        var url = `${this._rootUrl}${this._getAllUrl}`;
-        return this.$client.get<Product[]>(url).pipe(
-            catchError(this.handleError)
-        );
+        const url = `${this._rootUrl}${this._getAllUrl}`;
+        return this.$client.get<Product[]>(url)
+            .pipe(catchError(this.handleError));
     }
-    public create(): Observable<Product> {
-        var url = `${this._rootUrl}${this._getCreate}`;
-        return this.$client.get<Product>(url).pipe(
-            catchError(this.handleError)
-        );
-    }
+    public create(): Observable<IProduct> {
+        const url = `${this._rootUrl}${this._getCreateUrl}`;
+        return this.$client.get<IProduct>(url)
+            .pipe( catchError(this.handleError));
 
+    }
     public getProductByID(id: string) : Observable<IProduct>{
-        var url = `${this._rootUrl}${this._getByIDUrl}`;
-        return this.$client.get<Product>(url, { params: { "productID" : id} })
-                        .pipe(catchError(this.handleError));
+        const url = `${this._rootUrl}${this._getByIDUrl}`;
+        return this.$client.get<Product>(url, { params: { 'productID' : id} })
+            .pipe(catchError(this.handleError));
     }
-
     public getProductTypes(): Observable<IKeyValue[]> {
-        var url = `${this._rootUrl}${this._getTypesUrl}`;
+        const url = `${this._rootUrl}${this._getTypesUrl}`;
         return this.$client.get<IKeyValue[]>(url)
-                    .pipe(catchError(this.handleError));
+            .pipe(catchError(this.handleError));
     }
     public insert(product: IProduct): Observable<boolean> {
-        var url = `${this._rootUrl}${this._insertUrl}`;
+        const url = `${this._rootUrl}${this._insertUrl}`;
         return this.$client.post<boolean>(url, product)
-                           .pipe(catchError(this.handleError));
+            .pipe(catchError(this.handleError));
     }
     public update(product: IProduct):Observable<boolean> {
-        var url = `${this._rootUrl}${this.update}`;
+        const url = `${this._rootUrl}${this._updateUrl}`;
         return this.$client.post<boolean>(url, product)
-                           .pipe(catchError(this.handleError));
+            .pipe(catchError(this.handleError));
     }
 
     private handleError(response: HttpErrorResponse){
-        var errorMessage = '';
-        var errEvent = response.error;
+        let errorMessage = '';
+        const errEvent = response.error;
 
         if (errEvent instanceof ErrorEvent) {
             errorMessage = `An error occurred: ${errEvent.message}`;

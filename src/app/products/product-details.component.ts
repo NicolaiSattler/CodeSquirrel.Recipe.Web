@@ -1,133 +1,127 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, Subscription} from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { IProduct } from '../model/product';
 import { IKeyValue } from '../model/keyvalue';
 import { ProductStateService } from './product-state.service';
+import { ProductNameValidator } from './product-name-validator.directive';
 
 @Component({
   templateUrl: './product-details.component.html',
   styleUrls: ['./product-details.component.css'],
-  host: {
-    class: 'container'
-  }
+  host: {class: 'container'}
 })
+
 export class ProductDetailsComponent implements OnInit {
-  
-  private nameValueControlSubscriber: Subscription;
- 
+
+  private nameValueControlSub: Subscription;
+  private productSub: Subscription;
   public pageTitle: string;
-  public product$: Observable<IProduct>
-  public productTypes$ : Observable<IKeyValue[]>
-  public isNew : boolean;
-  public state : string;
-  public nameErrorMessage : string;
+  public state: string;
+  public isNew: boolean;
+  public product: IProduct;
+  public productTypes$: Observable<IKeyValue[]>;
+  public nameErrorMessage: string;
   public productForm: FormGroup;
-  public get nameControl() : AbstractControl {
+  public get nameControl(): AbstractControl {
     return this.productForm.get('nameControl');
   }
-  public get typeControl() : AbstractControl { 
+  public get typeControl(): AbstractControl {
     return this.productForm.get('typeControl');
   }
-  public get nameValidationMessages() : any {
-    return {
-      required: "Please enter a product name.",
-      maxLength: "The product name is to long (256)."
-    }
+  public get perishabledContro(): AbstractControl {
+    return this.productForm.get('perishabledControl');
   }
-  
-  constructor(private $route: ActivatedRoute, 
+  public get nameValidationMessages(): any {
+    return {
+      required: 'Please enter a product name.',
+      maxlength: 'The product name is too long (256).',
+      uniqueName: 'The product name is not unique.'
+    };
+  }
+
+  constructor(private $route: ActivatedRoute,
               private $router: Router,
               private $formBuilder: FormBuilder,
-              private _service : ProductStateService) {
+              private _nameValidator: ProductNameValidator,
+              private _service: ProductStateService) {
+  }
 
-    this.pageTitle = "Product Details"
-  } 
-  
-  private initialize(id: any){
-    this.productTypes$ = this._service.getProductTypes();
+  private initialize(product: IProduct, isNew: boolean){
+    this.product = product;
+    this.isNew = isNew;
 
-    if (id && !this.isNew){
-      let result = this._service.getProductByID(id);
-      
-      if (result) {       
-        this.product$ = result;
-        this.populateData();
-      }
-      else {
-        this.pageTitle = 'No product found...';  
-      }
-      return;
-    }
-    
-    if (this.isNew) {
-      let result = this._service.createProduct();
+    if (isNew) {
       this.pageTitle = 'Create a new product.';
-      
-      if (result){
-        this.product$ = result; 
-        this.populateData();
-      }
+    } else {
+      this.pageTitle = 'Product Details';
     }
-  }
-  private populateData() : void {
-    let subscriber = this.product$.subscribe((product) => {
-      this.productForm.setValue({
-        nameControl: product.Name,
-        typeControl: product.Type,
-        perishableControl: product.Perishable
-      });
+    this.productForm.setValue({
+      nameControl: this.product.Name,
+      typeControl: this.product.Type,
+      perishableControl: this.product.Perishable
     });
-
-    subscriber.unsubscribe();
   }
-  private setNameErrorMessage(value: string): void {
-    this.nameErrorMessage = '';
-    if ((this.nameControl.touched || this.nameControl.dirty) && this.nameControl.errors){
-      this.nameErrorMessage = Object.keys(this.nameControl.errors)
-                                    .map(key => this.nameErrorMessage += this.nameValidationMessages[key])
-                                    .join(' ');
+  private setNameErrorMessage(): void {
+    if ((this.nameControl.touched || this.nameControl.dirty) && this.nameControl.errors) {
+      let aggrErrorMsg = '';
+      Object.keys(this.nameControl.errors).map(key => aggrErrorMsg += this.nameValidationMessages[key]);
+
+      this.nameErrorMessage = aggrErrorMsg;
     }
   }
-  private navigateToProductList() : void {
+  private navigateToProductList(): void {
     this.$router.navigate(['/products']);
   }
-  public onSave() : void {
-    let productSub = this._product.subscribe(product => { 
-      let saveProductSub = this._service.saveProduct(product, this.isNew)
-                   .subscribe(result => {
-                     if (result == true){
-                       this._state = "The product has been saved."
-                      } else this._state = "The product could not be saved."
-                   });
-      saveProductSub.unsubscribe();
-    });
-
-    productSub.unsubscribe();
+  public onSave(): void {
+    const saveProductSub = this._service.saveProduct(this.product, this.isNew)
+                  .subscribe(result => {
+                    if (result === true) {
+                      this.state = 'The product has been saved.';
+                    } else  {
+                      this.state = 'The product could not be saved.';
+                    }
+                  });
+    saveProductSub.unsubscribe();
   }
-  public onRemove() : void {
+  public onRemove(): void {
   }
-  public onBack() : void {
-    this.navigateToProductList(); 
+  public onBack(): void {
+    this.navigateToProductList();
   }
 
-  ngOnInit() : void {
-    let id = this.$route.snapshot.paramMap.get('id');  
-    let isNewParam = this.$route.snapshot.paramMap.get('isnew');
-    
-    this.isNew = isNewParam == 'true' ? true : false;
+  ngOnInit(): void {
+    const id = this.$route.snapshot.paramMap.get('id');
+    const isNew = this.$route.snapshot.paramMap.get('isnew') === 'true';
+
+    this.productTypes$ = this._service.getProductTypes();
     this.productForm = this.$formBuilder.group({
-      nameControl: ['', [Validators.required, Validators.maxLength(256)]],
-      typeControl: ['', [Validators.required]],
+      nameControl: [null,
+                   { asyncValidators: [this._nameValidator.validate.bind(this._nameValidator)], updateOn: 'blur'}],
+      typeControl: [null, [Validators.required]],
       perishableControl: false
     });
 
-    this.nameValueControlSubscriber = this.nameControl.valueChanges.subscribe(value => this.setNameErrorMessage(value));
-     
-    this.initialize(id);    
+    this.nameControl.setValidators([Validators.required, Validators.maxLength(256)]);
+    this.nameValueControlSub = this.nameControl.valueChanges
+      .pipe(debounceTime(200))
+      .subscribe(value => this.setNameErrorMessage());
+
+    if (isNew) {
+      this.productSub = this._service.createProduct()
+        .subscribe((product: IProduct) => {
+          this.initialize(product, isNew);
+        });
+    } else {
+      this.productSub = this._service.getProductByID(id)
+        .subscribe((product: IProduct) => this.initialize(product, isNew));
+    }
   }
-  ngOnDestroy() : void {
-    this.nameValueControlSubscriber.unsubscribe();
+
+  OnDestroy(): void {
+    this.nameValueControlSub.unsubscribe();
+    this.productSub.unsubscribe();
   }
 }
