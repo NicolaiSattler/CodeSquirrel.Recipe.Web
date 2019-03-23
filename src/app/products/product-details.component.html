@@ -32,11 +32,15 @@
           Type
         </label>
         <div class="col-sm-10">
-          <select id="type" class="form-control" placeholder="Producttype.." formControlName="typeControl" [ngClass]="{'is-valid': (typeControl.touched || typeControl.dirty) && !typeControl.valid }">
+          <select id="type" class="form-control" placeholder="Producttype.." formControlName="typeControl" 
+          [ngClass]="{'is-valid': typeControl.dirty && typeControl.valid, 'is-invalid': typeControl.dirty && !typeControl.valid }" >
             <option *ngFor="let item of productTypes$ | async" [value]="item.Key">
               {{ item.Value }}
             </option>
           </select>
+          <small class="text-danger form-text">
+            {{ typeErrorMessage }}
+          </small>
         </div>
       </div>
       <div class='form-group row'>
