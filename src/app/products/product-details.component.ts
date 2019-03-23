@@ -15,11 +15,11 @@ import { ProductNameValidator } from './product-name-validator.directive';
 })
 
 export class ProductDetailsComponent implements OnInit {
-
   private nameValueControlSub: Subscription;
   private typeValueControlSub: Subscription;
   private productSub: Subscription;
-
+  private saveProductSub: Subscription;
+  private deleteProductSub: Subscription;
 
   public pageTitle: string;
   public state: string;
@@ -30,13 +30,13 @@ export class ProductDetailsComponent implements OnInit {
   public typeErrorMessage: string;
   public productForm: FormGroup;
   public get nameControl(): AbstractControl {
-    return this.productForm.get('nameControl');
+    return this.productForm.get('Name');
   }
   public get typeControl(): AbstractControl {
-    return this.productForm.get('typeControl');
+    return this.productForm.get('Type');
   }
   public get perishabledContro(): AbstractControl {
-    return this.productForm.get('perishabledControl');
+    return this.productForm.get('Perishable');
   }
   public get nameValidationMessages(): any {
     return {
@@ -56,7 +56,7 @@ export class ProductDetailsComponent implements OnInit {
               private $router: Router,
               private $formBuilder: FormBuilder,
               private _nameValidator: ProductNameValidator,
-              private _service: ProductStateService) {
+              private service: ProductStateService) {
   }
 
   private initialize(product: IProduct, isNew: boolean) {
@@ -69,9 +69,9 @@ export class ProductDetailsComponent implements OnInit {
       this.pageTitle = 'Product Details';
     }
     this.productForm.setValue({
-      nameControl: this.product.Name,
-      typeControl: this.product.Type,
-      perishableControl: this.product.Perishable
+      Name: this.product.Name,
+      Type: this.product.Type,
+      Perishable: this.product.Perishable
     });
   }
   private setNameErrorMessage(): void {
@@ -82,7 +82,7 @@ export class ProductDetailsComponent implements OnInit {
       this.nameErrorMessage = aggrErrorMsg;
     }
   }
-  private setTypeErrorMessage(): void{
+  private setTypeErrorMessage(): void {
     if ((this.typeControl.touched || this.typeControl.dirty) && this.typeControl.errors) {
       let aggrErrorMsg = '';
       Object.keys(this.typeControl.errors).map(key => aggrErrorMsg += this.typeValidationMessages[key]);
@@ -99,17 +99,28 @@ export class ProductDetailsComponent implements OnInit {
     };
   }
   public onSave(): void {
-    const saveProductSub = this._service.saveProduct(this.product, this.isNew)
-                  .subscribe(result => {
-                    if (result === true) {
-                      this.state = 'The product has been saved.';
-                    } else  {
-                      this.state = 'The product could not be saved.';
-                    }
-                  });
-    saveProductSub.unsubscribe();
+    if (this.productForm.valid && this.productForm.dirty) {
+      const p = { ...this.product, ...this.productForm.value };
+
+      this.saveProductSub = this.service.saveProduct(p, this.isNew)
+        .subscribe(result => {
+          if (result) {
+            this.state = 'The product has been saved.';
+            this.productForm.reset();
+            this.navigateToProductList();
+          } else  {
+            this.state = 'The product could not be saved.';
+          }
+        },
+        (error: any) => this.state = <string>error
+      );
+    }
   }
   public onRemove(): void {
+    if (confirm('Are you sure you want to the delete this item?')) {
+      this.deleteProductSub = this.service.deleteProduct(this.product.UniqueID)
+        .subscribe(() => this.navigateToProductList());
+    }
   }
   public onBack(): void {
     this.navigateToProductList();
@@ -119,12 +130,11 @@ export class ProductDetailsComponent implements OnInit {
     const id = this.$route.snapshot.paramMap.get('id');
     const isNew = this.$route.snapshot.paramMap.get('isnew') === 'true';
 
-    this.productTypes$ = this._service.getProductTypes();
+    this.productTypes$ = this.service.getProductTypes();
     this.productForm = this.$formBuilder.group({
-      nameControl: [null,
-                   { asyncValidators: [this._nameValidator.validate.bind(this._nameValidator)], updateOn: 'blur'}],
-      typeControl: [null, [Validators.required, this.undefinedProductTypeValidator()]],
-      perishableControl: false
+      Name: [null, { asyncValidators: [this._nameValidator.validate.bind(this._nameValidator)], updateOn: 'blur'}],
+      Type: [null, [Validators.required, this.undefinedProductTypeValidator()]],
+      Perishable: false
     });
 
     this.nameControl.setValidators([Validators.required, Validators.maxLength(256)]);
@@ -135,18 +145,34 @@ export class ProductDetailsComponent implements OnInit {
       .subscribe(value => this.setTypeErrorMessage());
 
     if (isNew) {
-      this.productSub = this._service.createProduct()
+      this.productSub = this.service.createProduct()
         .subscribe((product: IProduct) => {
           this.initialize(product, isNew);
         });
     } else {
-      this.productSub = this._service.getProductByID(id)
+      this.productSub = this.service.getProductByID(id)
         .subscribe((product: IProduct) => this.initialize(product, isNew));
     }
   }
 
   OnDestroy(): void {
-    this.nameValueControlSub.unsubscribe();
-    this.productSub.unsubscribe();
+    if (this.nameValueControlSub) {
+      this.nameValueControlSub.unsubscribe();
+    }
+
+    if (this.typeValueControlSub) {
+      this.typeValueControlSub.unsubscribe();
+    }
+
+    if (this.productSub) {
+        this.productSub.unsubscribe();
+    }
+
+    if (this.saveProductSub) {
+      this.saveProductSub.unsubscribe();
+    }
+    if (this.deleteProductSub) {
+      this.deleteProductSub.unsubscribe();
+    }
   }
 }

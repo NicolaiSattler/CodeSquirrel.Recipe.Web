@@ -2,8 +2,9 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProductListComponent } from './product-list.component';
-import { ProductDetailGuard } from './product-detail.guard';
+import { ProductCanActivateGuard } from './product-detail-activate.guard';
 import { ProductDetailsComponent } from './product-details.component';
+import { ProductCanDeactivateGuard } from './product-detail-deactivate.guard';
 
 @NgModule({
   imports: [
@@ -12,12 +13,13 @@ import { ProductDetailsComponent } from './product-details.component';
       { path: 'products', component: ProductListComponent },
       {
         path: 'products/:id/:isnew',
-        canActivate: [ ProductDetailGuard ], 
+        canActivate: [ ProductCanActivateGuard ],
+        canDeactivate: [ProductCanDeactivateGuard],
         component: ProductDetailsComponent
        }
     ])
   ],
-  exports:[
+  exports: [
     RouterModule
   ]
 })

@@ -1,50 +1,64 @@
 import { Injectable } from '@angular/core';
 import { ProductHttpService } from '../shared/product.service';
 import { IKeyValue } from '../model/keyvalue';
-import { IProduct } from '../model/product';
+import { IProduct, Product } from '../model/product';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 @Injectable()
 export class ProductStateService {
-    private _productCollection: IProduct[];
-    private _typeCollection: IKeyValue[];
+    private productCollection: IProduct[];
+    private typeCollection: IKeyValue[];
 
-    constructor(private _service: ProductHttpService) { }
+    constructor(private service: ProductHttpService) { }
+
+    private removeItem(uniqueID: string): boolean {
+        const p = this.productCollection.find(q => q.UniqueID === uniqueID);
+
+        if (p && p != null){
+            const index = this.productCollection.indexOf(p);
+            const result = this.productCollection.splice(index, 1);
+
+            if (result) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public getProductTypes(): Observable<IKeyValue[]> {
-        if (this._typeCollection == null) {
-            return this._service.getProductTypes().pipe(tap(data => this._typeCollection = data));
+        if (this.typeCollection == null) {
+            return this.service.getProductTypes().pipe(tap(data => this.typeCollection = data));
         }
 
         return new Observable<IKeyValue[]>((observer) => {
-            if (this._typeCollection && this._typeCollection.length === 0) {
+            if (this.typeCollection && this.typeCollection.length === 0) {
                 observer.error('There are no producttypes available');
                 observer.complete();
             }
 
-            observer.next(this._typeCollection);
+            observer.next(this.typeCollection);
             observer.complete();
         });
     }
     public getProductCollection(): Observable<IProduct[]> {
-        if (this._productCollection == null) {
-            return this._service.getProduct()
-                .pipe(tap(data => this._productCollection = data));
+        if (this.productCollection == null) {
+            return this.service.getProduct()
+                .pipe(tap(data => this.productCollection = data));
         }
 
         return new Observable<IProduct[]>((observer) => {
-            if (this._productCollection && this._productCollection.length === 0) {
+            if (this.productCollection && this.productCollection.length === 0) {
                 observer.error('There are no products available.')
                 observer.complete();
             }
 
-            observer.next(this._productCollection);
+            observer.next(this.productCollection);
             observer.complete();
         });
     }
     public getProductByID(id: string): Observable<IProduct> {
-        const result = this._productCollection.find(i => i.UniqueID === id);
+        const result = this.productCollection.find(i => i.UniqueID === id);
         return of(result);
     }
     public getProductByName$(name: string): Observable<IProduct> {
@@ -52,27 +66,30 @@ export class ProductStateService {
         return of(result);
     }
     public getProductByName(name: string): IProduct {
-        if (!this._productCollection) {
+        if (!this.productCollection) {
             return null;
         }
-        return this._productCollection.find(p => p.Name === name);
+        return this.productCollection.find(p => p.Name === name);
     }
     public createProduct(): Observable<IProduct> {
-        return this._service.create();
+        return this.service.create();
     }
-    public saveProduct(product: IProduct, isNew: boolean): Observable<boolean> {
+    public deleteProduct(uniqueID: string): Observable<{}> {
+        return this.service.delete(uniqueID).pipe(
+            tap(() => this.removeItem(uniqueID))
+        );
+    }
+    public saveProduct(product: Product, isNew: boolean): Observable<Product> {
         if (isNew) {
-            const insertAction = this._service.insert(product);
-            insertAction.subscribe(result => {
-                if (result === true) {
-                    this._productCollection.push(product);
-                }
-            });
-
-            return insertAction;
-
+            return this.service.insert(product).pipe(tap(() =>  this.productCollection.push(product)));
         } else {
-            return this._service.update(product);
+            return this.service.update(product).pipe(
+                tap(() => {
+                    if (this.removeItem(product.UniqueID)) {
+                        this.productCollection.push(product);
+                    }
+                })
+            );
         }
     }
 }

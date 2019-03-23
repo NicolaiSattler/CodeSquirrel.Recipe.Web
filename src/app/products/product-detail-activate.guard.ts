@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { ProductDetailsComponent } from './product-details.component';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ProductDetailGuard implements CanActivate {
-
+export class ProductCanActivateGuard implements CanActivate {
   private guidRegex = '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$';
-  constructor(private router: Router){ }
+
+  public component: ProductDetailsComponent;
+  public route: ActivatedRouteSnapshot;
+
+  constructor(private router: Router) { }
 
   canActivate(
     next: ActivatedRouteSnapshot,
@@ -19,7 +23,7 @@ export class ProductDetailGuard implements CanActivate {
     const isNew = next.url[2].path;
     const canRoute = (isValidID || isNew === 'true');
 
-    if (!canRoute){
+    if (!canRoute) {
       this.router.navigate(['/products']);
       return false;
     }

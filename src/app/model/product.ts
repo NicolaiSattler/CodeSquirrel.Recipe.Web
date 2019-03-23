@@ -1,10 +1,15 @@
+export interface IProduct {
+    UniqueID: string;
+    Name: string;
+    Type: number;
+    Perishable: boolean;
+}
+
 export class Product implements IProduct {
     private _uniqueID: string;
     private _name: string;
     private _type: number;
     private _perishable: boolean;
-    private _deleted: boolean;
-    private _modified: boolean;
 
     public get UniqueID(): string {
         return this._uniqueID;
@@ -29,11 +34,4 @@ export class Product implements IProduct {
     }
 
     constructor() { }
-}
-
-export interface IProduct {
-    UniqueID: string;
-    Name: string;
-    Type: number;
-    Perishable: boolean;
 }

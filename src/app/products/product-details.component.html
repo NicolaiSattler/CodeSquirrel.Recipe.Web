@@ -20,7 +20,7 @@
           Naam
         </label>
         <div class="col-sm-10">
-          <input id="name" type="text" class="form-control" placeholder="Name.." formControlName="nameControl"
+          <input id="name" type="text" class="form-control" placeholder="Name.." formControlName="Name"
             [ngClass]="{'is-valid': nameControl.dirty && nameControl.valid, 'is-invalid': nameControl.dirty && !nameControl.valid }" />
           <small class="text-danger form-text">
             {{ nameErrorMessage }}
@@ -32,7 +32,7 @@
           Type
         </label>
         <div class="col-sm-10">
-          <select id="type" class="form-control" placeholder="Producttype.." formControlName="typeControl" 
+          <select id="type" class="custom-select form-control" placeholder="Producttype.." formControlName="Type" 
           [ngClass]="{'is-valid': typeControl.dirty && typeControl.valid, 'is-invalid': typeControl.dirty && !typeControl.valid }" >
             <option *ngFor="let item of productTypes$ | async" [value]="item.Key">
               {{ item.Value }}
@@ -44,12 +44,15 @@
         </div>
       </div>
       <div class='form-group row'>
-        <label for="perishable" class="col-sm-2 col-form-label">
-          Perishables
-        </label>
-        <div class="col-sm-1">
-          <input id="perishable" type="checkbox" class="form-control" formControlName="perishableControl" />
-        </div>
+        <div class="col-sm-2">Optional</div>
+        <div class="col-sm-10">
+          <div class="form-check custom-control custom-checkbox">
+              <input id="perishable" type="checkbox" class="form-check-input custom-control-input" formControlName="Perishable" />
+              <label class="form-check-label custom-control-label" for="perishable">
+                Perishable
+              </label>
+            </div>
+          </div>
       </div>
     </form>
   </div>
