@@ -2,13 +2,17 @@
     <a class='navbar-brand'>{{pageTitle}}</a>
     <ul class="nav nav-pills">
         <li>
-            <a class="nav-link" [routerLink]="['/welcome']">Home</a>
+            <a class="nav-link" [routerLink]="['/welcome']" routerLinkActive="active">Home</a>
         </li>
         <li>
-            <a class="nav-link" [routerLink]="['/products']">Product List</a>
+            <a class="nav-link" [routerLink]="['/products']" routerLinkActive="active">Product List</a>
         </li>
     </ul>
 </nav>
-<div class="container">
-    <router-outlet></router-outlet>
+<div class="container"
+    [@routerTransition]="o.isActivated ? o.activatedRoute : ''">
+    <router-outlet #o="outlet">
+    </router-outlet>
 </div>
+
+<app-load-spinner-overlay *ngIf="showLoader"></app-load-spinner-overlay>

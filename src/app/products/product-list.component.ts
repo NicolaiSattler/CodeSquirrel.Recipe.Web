@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { IKeyValue } from '../model/keyvalue';
 import { IProduct } from '../model/product';
 import { ProductStateService } from './product-state.service';
-import { Observable, Subscription, of } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Router } from '@angular/router';
-import { IKeyValue } from '../model/keyvalue';
-import { IPromise } from 'q';
+import { LoaderService } from '../shared/loader.service';
 
 @Component({
     selector: 'app-product-list',
@@ -13,18 +13,19 @@ import { IPromise } from 'q';
     host: { class: 'container' }
 })
 
-export class ProductListComponent implements OnInit {
-    private typeFlagSub: Subscription;
+export class ProductListComponent implements OnInit, OnDestroy {
+    private productTypeSub: Subscription;
+    private queryParamSub: Subscription;
 
     private _filterProductCollection$: Observable<IProduct[]>;
     private _needle: string;
 
     public pageTitle: string;
-    public selectAllChecked: boolean;
-    public isReady: boolean ;
     public stateMessage: string;
+    public selectAllChecked: boolean;
+    public isReady: boolean;
+    public productTypes: IKeyValue[];
     public productCollection$: Observable<IProduct[]>;
-    public productTypes$: Observable<IKeyValue[]>;
     public get filterProductCollection$(): Observable<IProduct[]> {
         return this._filterProductCollection$;
     }
@@ -40,9 +41,11 @@ export class ProductListComponent implements OnInit {
         this.filter(this._needle);
     }
 
-    constructor(private $router: Router, private service: ProductStateService) {
+    constructor(private $activatedRoute: ActivatedRoute,
+                private $router: Router,
+                private productService: ProductStateService,
+                private loaderService: LoaderService) {
         this.pageTitle = 'Product Overzicht';
-        this.stateMessage =  'Loading...';
     }
 
     private filter(needle: string): void {
@@ -51,15 +54,12 @@ export class ProductListComponent implements OnInit {
             map(products => products.filter(p => p.Name.toLocaleLowerCase().indexOf(cleanNeedle) !== -1)));
     }
 
-    //TODO: hoe dan wel? :(
-    public getTypeFlag(key: string): Promise<string> {
-        return this.productTypes$.toPromise().then(data => {
-            const p = data.find(i => i.Key === +key);
-            return p.Value;
-        });
+    public getTypeFlag(key: string): string {
+        const item = this.productTypes.find(kv => kv.Key === +key);
+        return item.Value;
     }
     public Add(): void {
-        this.$router.navigate(['products', '', true]);
+        this.$router.navigate(['/products', 0, { isnew: true } ], { queryParams : { filterBy: this.needle } });
     }
     public Remove(): void {
 
@@ -71,8 +71,32 @@ export class ProductListComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.productTypes$ = this.service.getProductTypes();
-        this.productCollection$ = this.service.getProductCollection();
-        this.filterProductCollection$ = this.productCollection$;
+        let needle = '';
+
+        this.queryParamSub = this.$activatedRoute.queryParamMap.subscribe(map => {
+            needle = map.get('filterBy');
+        });
+
+        this.loaderService.show(true);
+
+        this.productTypeSub = this.productService.getProductTypes()
+                                                 .subscribe((result) => {
+                this.productTypes = result;
+                this.productCollection$ = this.productService.getProductCollection();
+                this.filterProductCollection$ = this.productCollection$;
+                if (needle !== null) {
+                    this.needle = needle;
+                }
+                this.loaderService.show(false);
+            },
+            (error) => {
+                this.stateMessage = error;
+                this.loaderService.show(false);
+            });
+    }
+
+    ngOnDestroy(): void {
+        this.productTypeSub.unsubscribe();
+        this.queryParamSub.unsubscribe();
     }
 }

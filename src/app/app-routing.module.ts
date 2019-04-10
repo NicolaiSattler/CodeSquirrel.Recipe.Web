@@ -3,19 +3,24 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { WelcomeComponent } from './common/welcome/welcome.component';
 
+const routes = [ { path: 'welcome', component: WelcomeComponent },
+                 { path: '', redirectTo: 'welcome', pathMatch: 'full'},
+                 //TODO: replace with 404 page
+                 //{ path: '**', component: PageNotFoundComponent }
+];
+
 @NgModule({
   declarations: [
     WelcomeComponent
   ],
   imports: [
     CommonModule,
-    RouterModule.forRoot([
-      { path: 'welcome', component: WelcomeComponent },
-      { path: '', redirectTo: 'welcome', pathMatch: 'full'},
-      { path: '**', redirectTo: 'welcome', pathMatch: 'full'} //TODO: replace with 404 page
-    ])
+    RouterModule.forRoot(routes,
+       {
+        //  enableTracing: true
+       })
   ],
-  exports:[
+  exports: [
     RouterModule
   ]
 })

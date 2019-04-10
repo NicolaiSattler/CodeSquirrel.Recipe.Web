@@ -3,19 +3,24 @@
   <div class='card-body'>
     <div class="btn-toolbar mb-3 justify-content-between" role="toolbar">
       <div class="btn-group btn-group-sm" role="group">
-        <button type="button" class="btn btn-primary" (click)='Add()' >Add</button>
-        <button type="button" class="btn btn-primary disabled" (click)='Remove()'>Remove</button>
+        <button type="button" class="btn btn-primary" [disabled]="!isReady" (click)='Add()'>Add</button>
+        <button type="button" class="btn btn-primary" [disabled]="!isReady" (click)='Remove()'>Remove</button>
       </div>
       <div class="input-group">
         <div class="input-group-prepend">
           <div class="input-group-text">Filter:</div>
         </div>
-        <input type="text" class="form-control" placeholder="Voer zoekopdracht in..." [(ngModel)]='needle' />
+        <input type="text" class="form-control" placeholder="Voer zoekopdracht in..." [disabled]="!isReady" [(ngModel)]='needle' />
       </div>
     </div>
     <div class="row">
+        <!-- 
+          sorting table... 
+          https://scotch.io/tutorials/sort-and-filter-a-table-using-angular       
+        -->
+
       <div class="col-sm-12">
-        <table *ngIf="isReady === true; else state_message" class="container table table-hover">
+        <table *ngIf="isReady === true; else state_message" class="container table table-hover table-striped table-borderless">
           <thead>
             <tr>
               <!-- <th><input type="checkbox"  [(ngModel)]="selectAllChecked" [ngModelOptions]="{standalone: true}"/></th> -->
@@ -30,9 +35,12 @@
                   <input type="checkbox" [checked]="selectRow(product.UniqueID)" />
               </td> -->
               <td>
-                <a [routerLink]="['/products', product.UniqueID, false]">{{ product.Name }}</a>
+                <a [routerLink]="['/products', product.UniqueID]"
+                   [queryParams]="{ filterBy: needle }">
+                  {{ product.Name }}
+                </a>
               </td>
-              <td>{{ product.Type }}</td>
+              <td>{{ getTypeFlag(product.Type) }}</td>
               <td>
                 <input type="checkbox" />
               </td>

@@ -20,6 +20,7 @@ export class ProductDetailsComponent implements OnInit {
   private productSub: Subscription;
   private saveProductSub: Subscription;
   private deleteProductSub: Subscription;
+  private paramSub: Subscription;
 
   public pageTitle: string;
   public state: string;
@@ -75,6 +76,8 @@ export class ProductDetailsComponent implements OnInit {
     });
   }
   private setNameErrorMessage(): void {
+    this.nameErrorMessage = '';
+
     if ((this.nameControl.touched || this.nameControl.dirty) && this.nameControl.errors) {
       let aggrErrorMsg = '';
       Object.keys(this.nameControl.errors).map(key => aggrErrorMsg += this.nameValidationMessages[key]);
@@ -91,7 +94,7 @@ export class ProductDetailsComponent implements OnInit {
     }
   }
   private navigateToProductList(): void {
-    this.$router.navigate(['/products']);
+    this.$router.navigate(['/products'], { queryParamsHandling: 'preserve' });
   }
   private undefinedProductTypeValidator(): ValidatorFn {
     return (control: AbstractControl): {[key: string]: any} | null => {
@@ -127,32 +130,34 @@ export class ProductDetailsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const id = this.$route.snapshot.paramMap.get('id');
-    const isNew = this.$route.snapshot.paramMap.get('isnew') === 'true';
+    this.paramSub = this.$route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      const isNew = params.get('isnew') === 'true';
 
-    this.productTypes$ = this.service.getProductTypes();
-    this.productForm = this.$formBuilder.group({
-      Name: [null, { asyncValidators: [this._nameValidator.validate.bind(this._nameValidator)], updateOn: 'blur'}],
-      Type: [null, [Validators.required, this.undefinedProductTypeValidator()]],
-      Perishable: false
+      this.productTypes$ = this.service.getProductTypes();
+      this.productForm = this.$formBuilder.group({
+        Name: [null, { asyncValidators: [this._nameValidator.validate.bind(this._nameValidator)], updateOn: 'blur'}],
+        Type: [null, [Validators.required, this.undefinedProductTypeValidator()]],
+        Perishable: false
+      });
+
+      this.nameControl.setValidators([Validators.required, Validators.maxLength(256)]);
+      this.nameValueControlSub = this.nameControl.valueChanges
+        .pipe(debounceTime(200))
+        .subscribe(value => this.setNameErrorMessage());
+      this.typeValueControlSub = this.typeControl.valueChanges
+        .subscribe(value => this.setTypeErrorMessage());
+
+      if (isNew) {
+        this.productSub = this.service.createProduct()
+          .subscribe((product: IProduct) => {
+            this.initialize(product, isNew);
+          });
+      } else {
+        this.productSub = this.service.getProductByID(id)
+          .subscribe((product: IProduct) => this.initialize(product, isNew));
+      }
     });
-
-    this.nameControl.setValidators([Validators.required, Validators.maxLength(256)]);
-    this.nameValueControlSub = this.nameControl.valueChanges
-      .pipe(debounceTime(200))
-      .subscribe(value => this.setNameErrorMessage());
-    this.typeValueControlSub = this.typeControl.valueChanges
-      .subscribe(value => this.setTypeErrorMessage());
-
-    if (isNew) {
-      this.productSub = this.service.createProduct()
-        .subscribe((product: IProduct) => {
-          this.initialize(product, isNew);
-        });
-    } else {
-      this.productSub = this.service.getProductByID(id)
-        .subscribe((product: IProduct) => this.initialize(product, isNew));
-    }
   }
 
   OnDestroy(): void {
@@ -174,5 +179,7 @@ export class ProductDetailsComponent implements OnInit {
     if (this.deleteProductSub) {
       this.deleteProductSub.unsubscribe();
     }
+
+    this.paramSub.unsubscribe();
   }
 }

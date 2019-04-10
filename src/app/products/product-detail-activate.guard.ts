@@ -18,10 +18,15 @@ export class ProductCanActivateGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     const regex = new RegExp(this.guidRegex);
-    const id = next.url[1].path;
+    const id = next.params.id;
     const isValidID = regex.test(id);
-    const isNew = next.url[2].path;
-    const canRoute = (isValidID || isNew === 'true');
+    let isNew =  false;
+
+    if (next.params.isnew) {
+      isNew = next.params.isnew === 'true';
+    }
+
+    const canRoute = (isValidID || isNew);
 
     if (!canRoute) {
       this.router.navigate(['/products']);
