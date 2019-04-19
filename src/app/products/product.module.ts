@@ -4,23 +4,16 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
 import { ProductListComponent } from './product-list.component';
 import { ProductDetailsComponent } from './product-details.component';
-import { ProductRoutingModule } from './product-routing.module';
 import { ProductStateService } from './product-state.service';
-
-import { ConvertToSpacePipe } from '../pipes/convert-to-space.pipe';
-import { LoaderService } from '../shared/loader.service';
-
-
+import { ProductRoutingModule } from './product-routing.module';
 
 @NgModule({
   declarations: [
-    ConvertToSpacePipe,
     ProductListComponent,
     ProductDetailsComponent
   ],
   providers: [
-    ProductStateService,
-    LoaderService
+    ProductStateService
   ],
   imports: [
     CommonModule,

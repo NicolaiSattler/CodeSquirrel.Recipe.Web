@@ -15,4 +15,7 @@
     </router-outlet>
 </div>
 
-<app-load-spinner-overlay *ngIf="showLoader"></app-load-spinner-overlay>
+<!-- <app-load-spinner-overlay></app-load-spinner-overlay> -->
+<ng-container *ngIf="showLoader">
+    <app-load-spinner-overlay></app-load-spinner-overlay>
+</ng-container >

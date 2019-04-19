@@ -10,21 +10,13 @@ import { ProductCanDeactivateGuard } from './product-detail-deactivate.guard';
   imports: [
     CommonModule,
     RouterModule.forChild([
-      {
-        path: 'products',
-        children: [
-          {
-            path: '',
-            component: ProductListComponent
-          },
-          {
-            path: ':id',
-            canActivate: [ ProductCanActivateGuard ],
-            canDeactivate: [ProductCanDeactivateGuard],
-            component: ProductDetailsComponent
-           }
-        ]
-      }
+        { path: '', component: ProductListComponent },
+        {
+          path: ':id',
+          canActivate: [ ProductCanActivateGuard ],
+          canDeactivate: [ProductCanDeactivateGuard],
+          component: ProductDetailsComponent
+        }
     ])
   ],
   exports: [

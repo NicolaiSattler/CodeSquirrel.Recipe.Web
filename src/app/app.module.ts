@@ -5,16 +5,12 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { ProductModule } from './products/product.module';
 
 import { LoaderService } from './shared/loader.service';
 import { LoadSpinnerComponent } from './ui/load-spinner/load-spinner.component';
 import { LoadSpinnerOverlayComponent } from './ui/load-spinner-overlay/load-spinner-overlay.component';
 
 @NgModule({
-  providers: [
-    //LoaderService
-  ],
   declarations: [
     AppComponent,
     LoadSpinnerComponent,
@@ -24,8 +20,6 @@ import { LoadSpinnerOverlayComponent } from './ui/load-spinner-overlay/load-spin
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    ProductModule,
-    //Should always be last due to the routing..
     AppRoutingModule
   ],
   bootstrap: [AppComponent]

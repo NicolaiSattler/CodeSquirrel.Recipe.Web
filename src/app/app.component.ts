@@ -11,18 +11,15 @@ import { Subscription } from 'rxjs';
 })
 
 export class AppComponent implements OnInit {
-  ngOnInit(): void {
-    this.loaderService.showLoader.subscribe((sub) => {
-      this.showLoader = sub;
-    });
-
-  }
-  public showLoader: boolean;
+  public showLoader = false;
   public pageTitle = 'Recipe App';
 
   constructor (private loaderService: LoaderService) {
 
   }
-
-
+  ngOnInit(): void {
+    this.loaderService.showLoader.subscribe((sub) => {
+      this.showLoader = sub;
+    });
+  }
 }
