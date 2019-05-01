@@ -5,7 +5,9 @@ import { IProduct, Product } from '../model/product';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class ProductStateService {
     private productCollection: IProduct[];
     private typeCollection: IKeyValue[];

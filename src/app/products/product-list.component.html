@@ -14,26 +14,21 @@
       </div>
     </div>
     <div class="row">
-        <!-- 
-          sorting table... 
-          https://scotch.io/tutorials/sort-and-filter-a-table-using-angular       
-        -->
-
       <div class="col-sm-12">
-        <table *ngIf="isReady === true; else state_message" class="container table table-hover table-striped table-borderless">
+        <table *ngIf="isReady === true; else state_message" class="container table table-hover table-striped table-borderless" >
           <thead>
             <tr>
-              <!-- <th><input type="checkbox"  [(ngModel)]="selectAllChecked" [ngModelOptions]="{standalone: true}"/></th> -->
+              <th></th>
               <th>Name</th>
               <th>Type</th>
               <th>Perishable</th>
             </tr>
           </thead>
-          <tbody >
-            <tr *ngFor='let product of filterProductCollection$ | async'>
-              <!-- <td>
-                  <input type="checkbox" [checked]="selectRow(product.UniqueID)" />
-              </td> -->
+          <tbody>
+            <tr *ngFor='let product of filterProductCollection$ | async; index as i'>
+              <td>
+                  <input type="checkbox" (click)='SelectRow(i)'/>
+              </td>
               <td>
                 <a [routerLink]="['/products', product.UniqueID]"
                    [queryParams]="{ filterBy: needle }">

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterContentInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -13,7 +13,7 @@ import { LoaderService } from '../shared/loader.service';
     host: { class: 'container' }
 })
 
-export class ProductListComponent implements OnInit, OnDestroy {
+export class ProductListComponent implements OnInit, AfterContentInit, OnDestroy {
     private productTypeSub: Subscription;
     private queryParamSub: Subscription;
 
@@ -64,20 +64,23 @@ export class ProductListComponent implements OnInit, OnDestroy {
     public Remove(): void {
 
     }
-    public SelectRow(uniqueID: string): void {
-
+    public SelectRow(index: any): void {
+        console.log("rowindex:" + index);
     }
     public SelectAll(): void {
     }
 
     ngOnInit(): void {
+        this.loaderService.show(true);
+    }
+
+    ngAfterContentInit(): void {
         let needle = '';
 
         this.queryParamSub = this.$activatedRoute.queryParamMap.subscribe(map => {
             needle = map.get('filterBy');
         });
 
-        this.loaderService.show(true);
 
         this.productTypeSub = this.productService.getProductTypes()
                                                  .subscribe((result) => {

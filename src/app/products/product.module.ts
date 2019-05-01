@@ -12,9 +12,6 @@ import { ProductRoutingModule } from './product-routing.module';
     ProductListComponent,
     ProductDetailsComponent
   ],
-  providers: [
-    ProductStateService
-  ],
   imports: [
     CommonModule,
     FormsModule,
