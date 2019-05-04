@@ -3,9 +3,9 @@ import { FormGroup, FormBuilder, Validators, ValidatorFn, AbstractControl } from
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription} from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import { IProduct } from '../model/product';
-import { IKeyValue } from '../model/keyvalue';
-import { ProductStateService } from './product-state.service';
+import { IProduct } from '../../model/product';
+import { IKeyValue } from '../../model/keyvalue';
+import { ProductStateService } from '../product-state.service';
 import { ProductNameValidator } from './product-name-validator.directive';
 
 @Component({

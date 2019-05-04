@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit, AfterViewInit, AfterContentChecked, AfterViewChecked } from '@angular/core';
 import { routerTransition } from './app.animation';
-import { LoaderService } from './shared/loader.service';
+import { LoaderService } from './shared/service/loader.service';
 import { Subscription } from 'rxjs';
 
 @Component({

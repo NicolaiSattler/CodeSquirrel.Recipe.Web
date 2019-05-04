@@ -2,7 +2,7 @@ import { Injectable, Directive, forwardRef } from '@angular/core';
 import { AbstractControl, ValidationErrors, AsyncValidator, NG_ASYNC_VALIDATORS } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ProductStateService } from './product-state.service';
+import { ProductStateService } from '../product-state.service';
 
 @Injectable({ providedIn: 'root' })
 

@@ -1,19 +1,25 @@
-import { Component, OnInit, OnDestroy, AfterContentInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterContentInit, ViewChildren, QueryList } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { IKeyValue } from '../model/keyvalue';
-import { IProduct } from '../model/product';
-import { ProductStateService } from './product-state.service';
-import { LoaderService } from '../shared/loader.service';
+import { IKeyValue } from '../../model/keyvalue';
+import { IProduct } from '../../model/product';
+import { ProductStateService } from '../product-state.service';
+import { LoaderService } from '../../shared/service/loader.service';
+import { SortableTableHeaderDirective, SortEvent } from 'src/app/shared/directive/sortable-table-header.directive';
+
+export const compare = (v1, v2) => v1 < v2 ? -1 : v1 > v2 ? 1 : 0;
 
 @Component({
-    selector: 'app-product-list',
-    templateUrl: './product-list.component.html',
+    selector: 'app-product-overview',
+    templateUrl: './product-overview.component.html',
+    styleUrls: ['./product-overview.component.css'],
     host: { class: 'container' }
 })
+export class ProductOverviewComponent implements OnInit, AfterContentInit, OnDestroy {
 
-export class ProductListComponent implements OnInit, AfterContentInit, OnDestroy {
+    @ViewChildren(SortableTableHeaderDirective) headers: QueryList<SortableTableHeaderDirective>;
+
     private productTypeSub: Subscription;
     private queryParamSub: Subscription;
 
@@ -65,16 +71,29 @@ export class ProductListComponent implements OnInit, AfterContentInit, OnDestroy
 
     }
     public SelectRow(index: any): void {
-        console.log("rowindex:" + index);
+        console.log('rowindex:' + index);
     }
-    public SelectAll(): void {
+
+    onSort({column, direction}: SortEvent): void {
+      this.headers.forEach(header => {
+        if (header.sortable !== column) {
+          header.direction = '';
+        }
+      });
+
+      if (direction === '') {   
+          this.filter(this._needle);
+      } else {
+          this.filterProductCollection$ = this.filterProductCollection$.pipe(map(products => products.sort((a, b) => {
+              const result = compare(a[column], b[column]);
+              return direction === 'asc' ? result : -result;
+            })));
+        }
     }
 
     ngOnInit(): void {
         this.loaderService.show(true);
-    }
 
-    ngAfterContentInit(): void {
         let needle = '';
 
         this.queryParamSub = this.$activatedRoute.queryParamMap.subscribe(map => {
@@ -96,6 +115,10 @@ export class ProductListComponent implements OnInit, AfterContentInit, OnDestroy
                 this.stateMessage = error;
                 this.loaderService.show(false);
             });
+    }
+
+    ngAfterContentInit(): void {
+
     }
 
     ngOnDestroy(): void {

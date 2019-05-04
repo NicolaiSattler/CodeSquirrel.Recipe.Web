@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { WelcomeComponent } from './common/welcome/welcome.component';
-import { CustomPreloadStrategy } from './shared/custom-preload-stratagy.service';
+import { CustomPreloadStrategy } from './shared/service/custom-preload-stratagy.service';
 
 @NgModule({
   declarations: [

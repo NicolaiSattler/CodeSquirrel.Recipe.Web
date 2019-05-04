@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ProductHttpService } from '../shared/product.service';
+import { ProductHttpService } from '../shared/service/product.service';
 import { IKeyValue } from '../model/keyvalue';
 import { IProduct, Product } from '../model/product';
 import { Observable, of } from 'rxjs';

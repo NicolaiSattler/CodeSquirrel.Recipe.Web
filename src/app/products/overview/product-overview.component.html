@@ -18,17 +18,15 @@
         <table *ngIf="isReady === true; else state_message" class="container table table-hover table-striped table-borderless" >
           <thead>
             <tr>
-              <th></th>
-              <th>Name</th>
-              <th>Type</th>
-              <th>Perishable</th>
+              <th scope="col">#</th>
+              <th scope="col" sortable="Name" (sort)="onSort($event)">Name</th>
+              <th scope="col" sortable="Type" (sort)="onSort($event)">Type</th>
+              <th scope="col" sortable="Perischable" (sort)="onSort($event)">Perishable</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor='let product of filterProductCollection$ | async; index as i'>
-              <td>
-                  <input type="checkbox" (click)='SelectRow(i)'/>
-              </td>
+              <th scope="row">{{ i + 1 }}</th>
               <td>
                 <a [routerLink]="['/products', product.UniqueID]"
                    [queryParams]="{ filterBy: needle }">
@@ -37,7 +35,7 @@
               </td>
               <td>{{ getTypeFlag(product.Type) }}</td>
               <td>
-                <input type="checkbox" />
+                <input type="checkbox" [checked]="product.Perishable" disabled/>
               </td>
             </tr> 
           </tbody>
