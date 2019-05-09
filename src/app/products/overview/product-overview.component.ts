@@ -29,6 +29,7 @@ export class ProductOverviewComponent implements OnInit, AfterContentInit, OnDes
     public pageTitle: string;
     public stateMessage: string;
     public selectAllChecked: boolean;
+    public isLoading: boolean;
     public isReady: boolean;
     public productTypes: IKeyValue[];
     public productCollection$: Observable<IProduct[]>;
@@ -57,23 +58,22 @@ export class ProductOverviewComponent implements OnInit, AfterContentInit, OnDes
     private filter(needle: string): void {
         const cleanNeedle = needle.toLocaleLowerCase();
         this.filterProductCollection$ = this.productCollection$.pipe(
-            map(products => products.filter(p => p.Name.toLocaleLowerCase().indexOf(cleanNeedle) !== -1)));
+            map(products => products.filter(p => {
+                const nameMatch = p.Name.toLocaleLowerCase().indexOf(cleanNeedle) !== -1;
+                const typeString =  this.getTypeFlag(p.Type.toString());
+                const typeMatch = typeString ? typeString.toLocaleLowerCase().indexOf(cleanNeedle) !== -1 : false;
+                return nameMatch || typeMatch;
+            })));
     }
 
     public getTypeFlag(key: string): string {
         const item = this.productTypes.find(kv => kv.Key === +key);
         return item.Value;
     }
-    public Add(): void {
+
+    onCreateProduct(): void {
         this.$router.navigate(['/products', 0, { isnew: true } ], { queryParams : { filterBy: this.needle } });
     }
-    public Remove(): void {
-
-    }
-    public SelectRow(index: any): void {
-        console.log('rowindex:' + index);
-    }
-
     onSort({column, direction}: SortEvent): void {
       this.headers.forEach(header => {
         if (header.sortable !== column) {
@@ -81,8 +81,8 @@ export class ProductOverviewComponent implements OnInit, AfterContentInit, OnDes
         }
       });
 
-      if (direction === '') {   
-          this.filter(this._needle);
+      if (direction === '') {
+          this.filter('');
       } else {
           this.filterProductCollection$ = this.filterProductCollection$.pipe(map(products => products.sort((a, b) => {
               const result = compare(a[column], b[column]);
@@ -92,33 +92,34 @@ export class ProductOverviewComponent implements OnInit, AfterContentInit, OnDes
     }
 
     ngOnInit(): void {
-        this.loaderService.show(true);
 
         let needle = '';
-
-        this.queryParamSub = this.$activatedRoute.queryParamMap.subscribe(map => {
-            needle = map.get('filterBy');
-        });
-
-
+        this.queryParamSub = this.$activatedRoute.queryParamMap.subscribe(map => { needle = map.get('filterBy'); });
         this.productTypeSub = this.productService.getProductTypes()
                                                  .subscribe((result) => {
+                this.isLoading = true;
                 this.productTypes = result;
                 this.productCollection$ = this.productService.getProductCollection();
                 this.filterProductCollection$ = this.productCollection$;
                 if (needle !== null) {
                     this.needle = needle;
                 }
+
+                this.isLoading = false;
                 this.loaderService.show(false);
             },
             (error) => {
                 this.stateMessage = error;
+                this.isLoading = false;
                 this.loaderService.show(false);
-            });
+            }
+        );
     }
 
     ngAfterContentInit(): void {
-
+        if (this.isLoading) {
+            this.loaderService.show(true);
+        }
     }
 
     ngOnDestroy(): void {

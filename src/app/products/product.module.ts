@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { SortableTableHeaderDirective } from '../shared/directive/sortable-table-header.directive';
 
@@ -19,7 +20,8 @@ import { ProductRoutingModule } from './product-routing.module';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    ProductRoutingModule
+    ProductRoutingModule,
+    NgbModule
   ],
   bootstrap: [
     ProductOverviewComponent

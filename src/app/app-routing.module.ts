@@ -18,10 +18,10 @@ import { CustomPreloadStrategy } from './shared/service/custom-preload-stratagy.
           data: { preload: true }
         },
         { path: '', redirectTo: 'welcome', pathMatch: 'full' },
-        //{ path: '**', component: PageNotFoundComponent }
+        // { path: '**', component: PageNotFoundComponent }
       ],
       {
-        enableTracing: true,
+        enableTracing: false,
         preloadingStrategy: CustomPreloadStrategy
       })
   ],

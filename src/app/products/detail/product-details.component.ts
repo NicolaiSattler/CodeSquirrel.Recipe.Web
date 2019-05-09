@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription} from 'rxjs';
@@ -14,7 +14,8 @@ import { ProductNameValidator } from './product-name-validator.directive';
   host: {class: 'container'}
 })
 
-export class ProductDetailsComponent implements OnInit {
+export class ProductDetailsComponent implements OnInit, AfterViewInit {
+
   private nameValueControlSub: Subscription;
   private typeValueControlSub: Subscription;
   private productSub: Subscription;
@@ -36,7 +37,7 @@ export class ProductDetailsComponent implements OnInit {
   public get typeControl(): AbstractControl {
     return this.productForm.get('Type');
   }
-  public get perishabledContro(): AbstractControl {
+  public get perishabledControl(): AbstractControl {
     return this.productForm.get('Perishable');
   }
   public get nameValidationMessages(): any {
@@ -63,17 +64,17 @@ export class ProductDetailsComponent implements OnInit {
   private initialize(product: IProduct, isNew: boolean) {
     this.product = product;
     this.isNew = isNew;
+    this.productForm.setValue({
+      Name: this.product.Name,
+      Type: this.product.Type,
+      Perishable: this.product.Perishable
+    });
 
     if (isNew) {
       this.pageTitle = 'Create a new product.';
     } else {
       this.pageTitle = 'Product Details';
     }
-    this.productForm.setValue({
-      Name: this.product.Name,
-      Type: this.product.Type,
-      Perishable: this.product.Perishable
-    });
   }
   private setNameErrorMessage(): void {
     this.nameErrorMessage = '';
@@ -138,7 +139,7 @@ export class ProductDetailsComponent implements OnInit {
       this.productForm = this.$formBuilder.group({
         Name: [null, { asyncValidators: [this._nameValidator.validate.bind(this._nameValidator)], updateOn: 'blur'}],
         Type: [null, [Validators.required, this.undefinedProductTypeValidator()]],
-        Perishable: false
+        Perishable: [null, [Validators.nullValidator]]
       });
 
       this.nameControl.setValidators([Validators.required, Validators.maxLength(256)]);
@@ -160,6 +161,13 @@ export class ProductDetailsComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit(): void {
+    if (!this.isNew) {
+      this.nameControl.updateValueAndValidity();
+      this.typeControl.updateValueAndValidity();
+      this.perishabledControl.updateValueAndValidity();
+    }
+  }
   OnDestroy(): void {
     if (this.nameValueControlSub) {
       this.nameValueControlSub.unsubscribe();

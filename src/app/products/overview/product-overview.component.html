@@ -3,8 +3,7 @@
   <div class='card-body'>
     <div class="btn-toolbar mb-3 justify-content-between" role="toolbar">
       <div class="btn-group btn-group-sm" role="group">
-        <button type="button" class="btn btn-primary" [disabled]="!isReady" (click)='Add()'>Add</button>
-        <button type="button" class="btn btn-primary" [disabled]="!isReady" (click)='Remove()'>Remove</button>
+        <button type="button" class="btn btn-primary" [disabled]="!isReady" (click)='onCreateProduct()'>Create a Product</button>
       </div>
       <div class="input-group">
         <div class="input-group-prepend">
@@ -28,12 +27,13 @@
             <tr *ngFor='let product of filterProductCollection$ | async; index as i'>
               <th scope="row">{{ i + 1 }}</th>
               <td>
-                <a [routerLink]="['/products', product.UniqueID]"
-                   [queryParams]="{ filterBy: needle }">
-                  {{ product.Name }}
+                <a [routerLink]="['/products', product.UniqueID]" [queryParams]="{ filterBy: needle }">
+                  <ngb-highlight [result]="product.Name" [term]="needle"></ngb-highlight>
                 </a>
               </td>
-              <td>{{ getTypeFlag(product.Type) }}</td>
+              <td>
+                <ngb-highlight [result]="getTypeFlag(product.Type)" [term]="needle"></ngb-highlight>
+              </td>
               <td>
                 <input type="checkbox" [checked]="product.Perishable" disabled/>
               </td>

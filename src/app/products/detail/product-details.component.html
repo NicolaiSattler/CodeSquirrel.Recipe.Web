@@ -33,7 +33,7 @@
         </label>
         <div class="col-sm-10">
           <select id="type" class="custom-select form-control" placeholder="Producttype.." formControlName="Type" 
-          [ngClass]="{'is-valid': typeControl.dirty && typeControl.valid, 'is-invalid': typeControl.dirty && !typeControl.valid }" >
+            [ngClass]="{'is-valid': typeControl.dirty && typeControl.valid, 'is-invalid': typeControl.dirty && !typeControl.valid }" >
             <option *ngFor="let item of productTypes$ | async" [value]="item.Key">
               {{ item.Value }}
             </option>
