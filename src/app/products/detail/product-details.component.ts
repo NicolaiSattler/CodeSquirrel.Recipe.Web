@@ -57,8 +57,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   constructor(private $route: ActivatedRoute,
               private $router: Router,
               private $formBuilder: FormBuilder,
-              private _nameValidator: ProductNameValidator,
-              private service: ProductStateService) {
+              private nameValidator: ProductNameValidator,
+              private productService: ProductStateService) {
   }
 
   private initialize(product: IProduct, isNew: boolean) {
@@ -106,7 +106,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     if (this.productForm.valid && this.productForm.dirty) {
       const p = { ...this.product, ...this.productForm.value };
 
-      this.saveProductSub = this.service.saveProduct(p, this.isNew)
+      this.saveProductSub = this.productService.saveProduct(p, this.isNew)
         .subscribe(result => {
           if (result) {
             this.state = 'The product has been saved.';
@@ -122,7 +122,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   }
   public onRemove(): void {
     if (confirm('Are you sure you want to the delete this item?')) {
-      this.deleteProductSub = this.service.deleteProduct(this.product.UniqueID)
+      this.deleteProductSub = this.productService.deleteProduct(this.product.UniqueID)
         .subscribe(() => this.navigateToProductList());
     }
   }
@@ -135,9 +135,9 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
       const id = params.get('id');
       const isNew = params.get('isnew') === 'true';
 
-      this.productTypes$ = this.service.getProductTypes();
+      this.productTypes$ = this.productService.getProductTypes();
       this.productForm = this.$formBuilder.group({
-        Name: [null, { asyncValidators: [this._nameValidator.validate.bind(this._nameValidator)], updateOn: 'blur'}],
+        Name: [null, { asyncValidators: [this.nameValidator.validate.bind(this.nameValidator)], updateOn: 'blur'}],
         Type: [null, [Validators.required, this.undefinedProductTypeValidator()]],
         Perishable: [null, [Validators.nullValidator]]
       });
@@ -150,13 +150,16 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
         .subscribe(value => this.setTypeErrorMessage());
 
       if (isNew) {
-        this.productSub = this.service.createProduct()
+        this.productSub = this.productService.createProduct()
           .subscribe((product: IProduct) => {
             this.initialize(product, isNew);
           });
       } else {
-        this.productSub = this.service.getProductByID(id)
-          .subscribe((product: IProduct) => this.initialize(product, isNew));
+        this.productSub = this.productService.getProductByID(id)
+          .subscribe((product: IProduct) => {
+            this.productService.editProduct = product;
+            this.initialize(product, isNew);
+          });
       }
     });
   }

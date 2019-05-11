@@ -12,6 +12,8 @@ export class ProductStateService {
     private productCollection: IProduct[];
     private typeCollection: IKeyValue[];
 
+    public editProduct: IProduct;
+
     constructor(private service: ProductHttpService) { }
 
     private removeItem(uniqueID: string): boolean {
@@ -63,15 +65,15 @@ export class ProductStateService {
         const result = this.productCollection.find(i => i.UniqueID === id);
         return of(result);
     }
-    public getProductByName$(name: string): Observable<IProduct> {
-        const result = this.getProductByName(name);
+    public isValidProductName$(name: string): Observable<boolean> {
+        const result = this.isValidateProductName(name);
         return of(result);
     }
-    public getProductByName(name: string): IProduct {
+    public isValidateProductName(name: string): boolean {
         if (!this.productCollection) {
             return null;
         }
-        return this.productCollection.find(p => p.Name === name);
+        return this.productCollection.find(p => p.Name === name && p.UniqueID !== this.editProduct.UniqueID) == null;
     }
     public createProduct(): Observable<IProduct> {
         return this.service.create();

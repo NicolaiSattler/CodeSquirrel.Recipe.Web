@@ -9,8 +9,8 @@
           <button *ngIf="isNew === false" type="button" class="btn btn-primary" (click)='onRemove()'>
             Remove
           </button>
-          <button type="submit" class="btn btn-primary" [title]="productForm.valid ? 'Save product.' : 'Disabled untill form data is valid'"
-            [disabled]="!productForm.valid">
+          <button type="submit" class="btn btn-primary" [title]="productForm.dirty ? 'Save product.' : 'Disabled untill form data is valid'"
+            [disabled]="!productForm.dirty">
             Save
           </button>
         </div>
@@ -62,3 +62,5 @@
     </button>
   </div>
 </div>
+
+<app-verify-modal></app-verify-modal>

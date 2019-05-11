@@ -10,8 +10,10 @@ export class ProductNameValidator implements AsyncValidator {
     constructor(private service: ProductStateService) {}
 
     public validate(control: AbstractControl): Promise<ValidationErrors> | Observable<ValidationErrors> {
-        return this.service.getProductByName$(control.value).pipe(
-            map(result => (result == null ? null : { uniqueName: true} ))
+        let group = control.parent;
+
+        return this.service.isValidProductName$(control.value).pipe(
+            map(result => (result === true ? null : { uniqueName: true }))
         );
     }
 }
@@ -26,10 +28,10 @@ export class ProductNameValidator implements AsyncValidator {
       }
     ]
   })
-  export class ProductNameValidatorDirective {
-    constructor(private validator: ProductNameValidator) {}
+export class ProductNameValidatorDirective {
+  constructor(private validator: ProductNameValidator) {}
 
-    validate(control: AbstractControl) {
-      this.validator.validate(control);
-    }
+  validate(control: AbstractControl, uniqueID: string) {
+    this.validator.validate(control);
   }
+}

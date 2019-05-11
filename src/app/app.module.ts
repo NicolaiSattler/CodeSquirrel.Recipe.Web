@@ -6,8 +6,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
-import { LoadSpinnerComponent } from './ui/load-spinner/load-spinner.component';
-import { LoadSpinnerOverlayComponent } from './ui/load-spinner-overlay/load-spinner-overlay.component';
+import { LoadSpinnerComponent } from './shared/component/load-spinner/load-spinner.component';
+import { LoadSpinnerOverlayComponent } from './shared/component/load-spinner-overlay/load-spinner-overlay.component';
 
 @NgModule({
   declarations: [

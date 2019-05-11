@@ -8,23 +8,23 @@ import { SortableTableHeaderDirective } from '../shared/directive/sortable-table
 import { ProductOverviewComponent } from './overview/product-overview.component';
 import { ProductDetailsComponent } from './detail/product-details.component';
 import { ProductRoutingModule } from './product-routing.module';
+import { ModalModule } from '../shared/component/modal/modal.module';
 
 
 @NgModule({
   declarations: [
     ProductOverviewComponent,
     ProductDetailsComponent,
-    SortableTableHeaderDirective
+    SortableTableHeaderDirective,
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     ProductRoutingModule,
-    NgbModule
+    NgbModule,
+    ModalModule
   ],
-  bootstrap: [
-    ProductOverviewComponent
-  ]
+  bootstrap: [ ProductOverviewComponent ]
 })
 export class ProductModule { }

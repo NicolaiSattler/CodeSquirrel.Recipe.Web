@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, AfterViewInit, AfterContentChecked, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { routerTransition } from './app.animation';
 import { LoaderService } from './shared/service/loader.service';
 import { Subscription } from 'rxjs';
@@ -10,16 +10,19 @@ import { Subscription } from 'rxjs';
   animations: [routerTransition]
 })
 
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
+  private loaderSub: Subscription;
+
   public showLoader = false;
   public pageTitle = 'Recipe App';
 
-  constructor (private loaderService: LoaderService) {
-
-  }
+  constructor (private loaderService: LoaderService) { }
   ngOnInit(): void {
-    this.loaderService.showLoader.subscribe((sub) => {
+    this.loaderSub = this.loaderService.showLoader.subscribe((sub) => {
       this.showLoader = sub;
     });
+  }
+  ngOnDestroy(): void {
+    this.loaderSub.unsubscribe();
   }
 }
