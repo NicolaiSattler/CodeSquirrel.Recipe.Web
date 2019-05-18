@@ -1,35 +1,24 @@
-import { Component, OnInit } from '@angular/core';
-import { NgbModalConfig, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Component, Input } from '@angular/core';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-verify-modal',
   templateUrl: './verify-modal.component.html',
-  styleUrls: ['./verify-modal.component.css'],
-  providers: [NgbModalConfig, NgbModal]
+  styleUrls: ['./verify-modal.component.css']
 })
 export class VerifyModalComponent {
 
-  public title: string;
-  public question: string;
+  @Input()caption: string;
+  @Input()message: string;
+  @Input()acceptButtonText: string;
+  @Input()declineButtonText: string;
 
-  constructor(config: NgbModalConfig, private modal: NgbModal) {
-    config.backdrop = 'static';
-    config.keyboard = false;
+  constructor(private activeModal: NgbActiveModal) { }
+
+  public decline(): void {
+    this.activeModal.close(false);
   }
-
-  public open(title: string, question: string, content?: any): boolean {
-    this.title = title;
-    this.question = question;
-
-    let dialogResult = false;
-
-    this.modal.open(content, { centered: true, size: 'sm'}).result.then(result => {
-      dialogResult = result === 'Yes';
-    }).catch (reason => {
-      console.log(`DialogModal error: ${reason}`);
-      dialogResult = false;
-    });
-
-    return dialogResult;
+  public accept(): void {
+    this.activeModal.close(true);
   }
 }
