@@ -11,8 +11,8 @@ export class VerifyModalService {
     constructor(private service: NgbModal) { }
 
     public verify(vm: VerifyMessage,
-                  acceptBtnText: string = 'Yes',
-                  declineBtnText: string = 'No',
+                  acceptBtnText: string = 'Ja',
+                  declineBtnText: string = 'Nee',
                   modalSize: 'sm'|'lg' = 'lg'): Promise<any> {
         const modal = this.service.open(VerifyModalComponent, { size: modalSize, backdrop: 'static', centered: true, keyboard: false });
         const component = modal.componentInstance as VerifyModalComponent;

@@ -5,13 +5,13 @@
   <div class='card-body'>
     <form [formGroup]="productForm" (ngSubmit)="onSave()">
       <div class="btn-toolbar mb-3 justify-content-between" role="toolbar">
-        <div class="btn-group btn-group" role="group">
+        <div class="btn-group btn-group-sm" role="group">
           <button *ngIf="isNew === false" type="button" class="btn btn-primary" (click)='onRemove()'>
-            Remove
+            Verwijderen
           </button>
-          <button type="submit" class="btn btn-primary" [title]="productForm.dirty ? 'Save product.' : 'Disabled untill form data is valid'"
+          <button type="submit" class="btn btn-primary" [title]="productForm.dirty ? 'Product opslaan.' : 'Uitgeschakeld totdat het formulier valide is.'"
             [disabled]="!productForm.dirty">
-            Save
+            Opslaan
           </button>
         </div>
       </div>
@@ -44,12 +44,12 @@
         </div>
       </div>
       <div class='form-group row'>
-        <div class="col-sm-2">Optional</div>
+        <div class="col-sm-2">Optioneel</div>
         <div class="col-sm-10">
           <div class="form-check custom-control custom-checkbox">
               <input id="perishable" type="checkbox" class="form-check-input custom-control-input" formControlName="Perishable" />
               <label class="form-check-label custom-control-label" for="perishable">
-                Perishable
+                Bederfelijk
               </label>
             </div>
           </div>
@@ -58,7 +58,7 @@
   </div>
   <div class='card-footer'>
     <button class='btn btn-outline-secondary' style='width: 80px' (click)='onBack()'>
-      Back
+      Terug
     </button>
   </div>
 </div>

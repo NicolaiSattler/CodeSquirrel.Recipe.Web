@@ -14,7 +14,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private loaderSub: Subscription;
 
   public showLoader = false;
-  public pageTitle = 'Recipe App';
+  public pageTitle = 'CodeSquirl | Recepten App';
 
   constructor (private loaderService: LoaderService) { }
   ngOnInit(): void {

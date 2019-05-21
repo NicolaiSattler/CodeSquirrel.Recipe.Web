@@ -5,7 +5,7 @@
             <a class="nav-link" [routerLink]="['/welcome']" routerLinkActive="active">Home</a>
         </li>
         <li>
-            <a class="nav-link" [routerLink]="['/products']" routerLinkActive="active">Product List</a>
+            <a class="nav-link" [routerLink]="['/products']" routerLinkActive="active">Product Overzicht</a>
         </li>
     </ul>
 </nav>
@@ -15,7 +15,6 @@
     </router-outlet>
 </div>
 
-<!-- <app-load-spinner-overlay></app-load-spinner-overlay> -->
 <ng-container *ngIf="showLoader">
     <app-load-spinner-overlay></app-load-spinner-overlay>
 </ng-container >

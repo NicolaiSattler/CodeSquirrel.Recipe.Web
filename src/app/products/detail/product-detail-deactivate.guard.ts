@@ -9,15 +9,22 @@ export class ProductCanDeactivateGuard implements CanDeactivate<ProductDetailsCo
 
   constructor(private service: VerifyModalService) { }
 
-  canDeactivate(component: ProductDetailsComponent): Promise<boolean>{
+  canDeactivate(component: ProductDetailsComponent): Promise<boolean> {
     if (component.productForm.dirty) {
       const vm = new VerifyMessage();
-      vm.caption = 'Unsaved changes';
-      vm.message = 'Do you wish to disregard all changes?';
+      vm.caption = 'Er zijn wijziging';
+      vm.message = 'Wilt u de wijzigingen opslaan?';
 
-      return this.service.verify(vm);
+      const result = this.service.verify(vm);
+      result.then(result => {
+        if (result === true) {
+          component.onSave();
+        }
+      });
+
+      return result;
     } else {
-      return new Promise<boolean>(() =>  true );
+      return new Promise<boolean>((resolve, reject) => { resolve(true); });
     }
   }
 }

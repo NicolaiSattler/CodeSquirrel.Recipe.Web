@@ -3,7 +3,7 @@
   <div class='card-body'>
     <div class="btn-toolbar mb-3 justify-content-between" role="toolbar">
       <div class="btn-group btn-group-sm" role="group">
-        <button type="button" class="btn btn-primary" [disabled]="!isReady" (click)='onCreateProduct()'>Create a Product</button>
+        <button type="button" class="btn btn-primary" [disabled]="!isReady" (click)='onCreateProduct()'>Aanmaken</button>
       </div>
       <div class="input-group">
         <div class="input-group-prepend">
@@ -18,9 +18,9 @@
           <thead>
             <tr>
               <th scope="col">#</th>
-              <th scope="col" sortable="Name" (sort)="onSort($event)">Name</th>
+              <th scope="col" sortable="Name" (sort)="onSort($event)">Naam</th>
               <th scope="col" sortable="Type" (sort)="onSort($event)">Type</th>
-              <th scope="col" sortable="Perischable" (sort)="onSort($event)">Perishable</th>
+              <th scope="col" sortable="Perischable" (sort)="onSort($event)">Bederfelijk</th>
             </tr>
           </thead>
           <tbody>
