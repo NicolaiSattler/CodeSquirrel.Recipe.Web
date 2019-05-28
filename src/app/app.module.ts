@@ -17,14 +17,14 @@ import { VerifyModalComponent } from './shared/component/modal/verify-modal.comp
     AppComponent,
     LoadSpinnerComponent,
     LoadSpinnerOverlayComponent,
-    VerifyModalComponent
+    VerifyModalComponent,
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
     NgbModule,
-    AppRoutingModule
+    AppRoutingModule,
   ],
   bootstrap: [AppComponent],
   entryComponents: [VerifyModalComponent]

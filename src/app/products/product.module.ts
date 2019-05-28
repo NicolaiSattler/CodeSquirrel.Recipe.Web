@@ -22,7 +22,6 @@ import { ProductRoutingModule } from './product-routing.module';
     ReactiveFormsModule,
     ProductRoutingModule,
     NgbModule
-  ],
-  bootstrap: [ ProductOverviewComponent ]
+  ]
 })
 export class ProductModule { }

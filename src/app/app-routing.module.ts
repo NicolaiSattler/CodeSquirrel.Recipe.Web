@@ -13,14 +13,29 @@ import { CustomPreloadStrategy } from './shared/service/custom-preload-stratagy.
   imports: [
     CommonModule,
     RouterModule.forRoot([
-        { path: 'welcome', component: WelcomeComponent },
+        {
+          path: 'welcome',
+          component: WelcomeComponent
+        },
         {
           path: 'products',
           loadChildren: './products/product.module#ProductModule',
           data: { preload: true }
         },
-        { path: '', redirectTo: 'welcome', pathMatch: 'full' },
-        { path: '**', component: PageNotFoundComponent }
+        {
+          path: 'necessities',
+          loadChildren: './necessities/necessity.module#NecessityModule',
+          data: { preload: true }
+        },
+        {
+          path: '',
+          redirectTo: 'welcome',
+          pathMatch: 'full'
+        },
+        {
+          path: '**',
+          component: PageNotFoundComponent 
+        }
       ],
       {
         enableTracing: false,
