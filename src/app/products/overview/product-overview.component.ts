@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, AfterContentInit, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChildren, QueryList, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -6,9 +6,7 @@ import { IKeyValue } from '../../model/keyvalue';
 import { IProduct } from '../../model/product';
 import { ProductStateService } from '../product-state.service';
 import { LoaderService } from '../../shared/service/loader.service';
-import { SortableTableHeaderDirective, SortEvent } from 'src/app/shared/directive/sortable-table-header.directive';
-
-export const compare = (v1, v2) => v1 < v2 ? -1 : v1 > v2 ? 1 : 0;
+import { SortableTableHeaderDirective, SortEvent, Compare } from 'src/app/shared/directive/sortable-table-header.directive';
 
 @Component({
     selector: 'app-product-overview',
@@ -16,7 +14,7 @@ export const compare = (v1, v2) => v1 < v2 ? -1 : v1 > v2 ? 1 : 0;
     styleUrls: ['./product-overview.component.css'],
     host: { class: 'container' }
 })
-export class ProductOverviewComponent implements OnInit, AfterContentInit, OnDestroy {
+export class ProductOverviewComponent implements OnInit, AfterViewInit, OnDestroy {
 
     @ViewChildren(SortableTableHeaderDirective) headers: QueryList<SortableTableHeaderDirective>;
 
@@ -25,20 +23,25 @@ export class ProductOverviewComponent implements OnInit, AfterContentInit, OnDes
 
     private _filterProductCollection$: Observable<IProduct[]>;
     private _needle: string;
+    private _isLoading: boolean;
 
     public pageTitle: string;
     public stateMessage: string;
     public selectAllChecked: boolean;
-    public isLoading: boolean;
-    public isReady: boolean;
     public productTypes: IKeyValue[];
     public productCollection$: Observable<IProduct[]>;
+    public get isLoading(): boolean {
+        return this._isLoading;
+    }
+    public set isLoading(v: boolean) {
+        this.setLoader(v);
+        this._isLoading = v;
+    }
     public get filterProductCollection$(): Observable<IProduct[]> {
         return this._filterProductCollection$;
     }
     public set filterProductCollection$(v: Observable<IProduct[]>) {
         this._filterProductCollection$ = v;
-        this.isReady = true;
     }
     public get needle(): string {
         return this._needle;
@@ -55,6 +58,11 @@ export class ProductOverviewComponent implements OnInit, AfterContentInit, OnDes
         this.pageTitle = 'Product Overzicht';
     }
 
+    private setLoader(isloading: boolean): void {
+        setTimeout(() => {
+            this.loaderService.show(isloading);
+        });
+    }
     private filter(needle: string): void {
         const cleanNeedle = needle.toLocaleLowerCase();
         this.filterProductCollection$ = this.productCollection$.pipe(
@@ -85,19 +93,21 @@ export class ProductOverviewComponent implements OnInit, AfterContentInit, OnDes
           this.filter('');
       } else {
           this.filterProductCollection$ = this.filterProductCollection$.pipe(map(products => products.sort((a, b) => {
-              const result = compare(a[column], b[column]);
+              const result = Compare(a[column], b[column]);
               return direction === 'asc' ? result : -result;
             })));
         }
     }
 
     ngOnInit(): void {
+        this.isLoading = true;
+    }
 
+    ngAfterViewInit(): void {
         let needle = '';
-        this.queryParamSub = this.$activatedRoute.queryParamMap.subscribe(map => { needle = map.get('filterBy'); });
+        this.queryParamSub = this.$activatedRoute.queryParamMap.subscribe(m => { needle = m.get('filterBy'); });
         this.productTypeSub = this.productService.getProductTypes()
                                                  .subscribe((result) => {
-                this.isLoading = true;
                 this.productTypes = result;
                 this.productCollection$ = this.productService.getProductCollection();
                 this.filterProductCollection$ = this.productCollection$;
@@ -106,20 +116,12 @@ export class ProductOverviewComponent implements OnInit, AfterContentInit, OnDes
                 }
 
                 this.isLoading = false;
-                this.loaderService.show(false);
             },
             (error) => {
                 this.stateMessage = error;
                 this.isLoading = false;
-                this.loaderService.show(false);
             }
         );
-    }
-
-    ngAfterContentInit(): void {
-        if (this.isLoading) {
-            this.loaderService.show(true);
-        }
     }
 
     ngOnDestroy(): void {

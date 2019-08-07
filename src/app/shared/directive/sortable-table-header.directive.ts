@@ -7,6 +7,7 @@ const rotate: {[key: string]: SortDirection} = {
 };
 
 export type SortDirection = 'asc' | 'desc' | '';
+export const Compare = (v1, v2) => v1 < v2 ? -1 : v1 > v2 ? 1 : 0;
 
 @Directive({
   selector: 'th[sortable]',

@@ -1,20 +1,20 @@
 <div class='card'>
-  <div class='card-header'>Product Overzicht</div>
+  <div class='card-header'>Producten</div>
   <div class='card-body'>
     <div class="btn-toolbar mb-3 justify-content-between" role="toolbar">
       <div class="btn-group btn-group-sm" role="group">
-        <button type="button" class="btn btn-primary" [disabled]="!isReady" (click)='onCreateProduct()'>Aanmaken</button>
+        <button type="button" class="btn btn-primary" [disabled]="isLoading" (click)='onCreateProduct()'>Aanmaken</button>
       </div>
       <div class="input-group">
         <div class="input-group-prepend">
           <div class="input-group-text">Filter:</div>
         </div>
-        <input type="text" class="form-control" placeholder="Voer zoekopdracht in..." [disabled]="!isReady" [(ngModel)]='needle' />
+        <input type="text" class="form-control" placeholder="Voer zoekopdracht in..." [disabled]="isLoading" [(ngModel)]='needle' />
       </div>
     </div>
     <div class="row">
       <div class="col-sm-12">
-        <table *ngIf="isReady === true; else state_message" class="container table table-hover table-striped table-borderless" >
+        <table *ngIf="isLoading === false; else state_message" class="table table-hover table-striped table-borderless" >
           <thead>
             <tr>
               <th scope="col">#</th>
@@ -41,7 +41,12 @@
           </tbody>
         </table>
         <ng-template #state_message>
-          <div class="alert alert-primary" role="alert">{{ stateMessage }}</div>
+          <div *ngIf="stateMessage != null" class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Oeps... er gaat iets fout!</h4>
+            <p>De producten konden niet opgehaald worden van de server.</p>
+            <hr>
+            <p class="mb-0"> {{ stateMessage }} </p>
+          </div>          
         </ng-template>
       </div>
     </div>
