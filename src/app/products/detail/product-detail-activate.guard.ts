@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { ProductDetailsComponent } from './product-details.component';
+import { ProductDetailComponent } from './product-detail.component';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +9,7 @@ import { ProductDetailsComponent } from './product-details.component';
 export class ProductCanActivateGuard implements CanActivate {
   private guidRegex = '^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$';
 
-  public component: ProductDetailsComponent;
+  public component: ProductDetailComponent;
   public route: ActivatedRouteSnapshot;
 
   constructor(private router: Router) { }

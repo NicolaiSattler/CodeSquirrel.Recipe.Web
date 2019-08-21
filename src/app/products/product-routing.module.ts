@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProductOverviewComponent } from './overview/product-overview.component';
 import { ProductCanActivateGuard } from './detail/product-detail-activate.guard';
-import { ProductDetailsComponent } from './detail/product-details.component';
+import { ProductDetailComponent } from './detail/product-detail.component';
 import { ProductCanDeactivateGuard } from './detail/product-detail-deactivate.guard';
 import { ProductOverviewCanDeactivateGuard } from './overview/product-overview.component.guard';
 
@@ -20,7 +20,7 @@ import { ProductOverviewCanDeactivateGuard } from './overview/product-overview.c
           path: ':id',
           canActivate: [ ProductCanActivateGuard ],
           canDeactivate: [ProductCanDeactivateGuard],
-          component: ProductDetailsComponent
+          component: ProductDetailComponent
         }
     ])
   ],

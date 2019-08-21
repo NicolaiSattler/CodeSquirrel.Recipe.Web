@@ -1,25 +1,53 @@
 <div class='card'>
-  <div class='card-header'>
-    Keukengerei
-  </div>
+  <div class='card-header'>Keukengerei</div>
   <div class='card-body'>
+    <div class="btn-toolbar mb-3 justify-content-between" role="toolbar">
+      <div class="btn-group btn-group-sm" role="group">
+        <button type="button" class="btn btn-primary" [disabled]="isLoading" (click)='onCreateNecessity()'>Aanmaken</button>
+      </div>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <div class="input-group-text">Filter:</div>
+        </div>
+        <input type="text" class="form-control" placeholder="Voer zoekopdracht in..." [disabled]="isLoading" [(ngModel)]='needle' />
+      </div>
+    </div>
     <div class='row'>
       <div class='col-sm-12'>
-        <table class='table table-hover table-striped table-borderless'>
+        <table *ngIf="isLoading === false; else state_message" class='table table-hover table-striped table-borderless'>
           <thead>
             <tr>
               <th scope="col">#</th>
-              <th scope="col" >Naam</th>
-              <th scope="col">Omschrijving</th>
-              <th scope="col">Electrisch</th>
+              <th scope="col" sortable="Name" (sort)="onSort($event)">Naam</th>
+              <th scope="col" sortable="Description" (sort)="onSort($event)">Omschrijving</th>
+              <th scope="col" sortable="Electrical" (sort)="onSort($event)">Electrisch</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor='let necessity of filterCollection | async; index as i'>
-              <th scope="row">{{ i + 1 }}></th>
+            <tr *ngFor='let necessity of filterCollection$ | async; index as i'>
+              <th scope="row">{{ i + 1 }}</th>
+              <td>
+                <a [routerLink]="['/necessities', necessity.UniqueID]" [queryParams]="{ filterBy: needle }">
+                  <ngb-highlight [result]="necessity.Name" [term]="needle"></ngb-highlight>
+                </a>
+              </td>
+              <td>
+                <ngb-highlight [result]="necessity.Description" [term]="needle"></ngb-highlight>
+              </td>
+              <td>
+                <input type="checkbox" [checked]="necessity.Electrical" disabled/>
+              </td>
             </tr>
-          </tbody>
+            </tbody>
         </table>
+        <ng-template #state_message>
+            <div *ngIf="stateMessage != null" class="alert alert-danger" role="alert">
+              <h4 class="alert-heading">Oeps... er gaat iets fout!</h4>
+              <p>De keuken benodigdheden konden niet opgehaald worden van de server.</p>
+              <hr>
+              <p class="mb-0"> {{ stateMessage }} </p>
+            </div>          
+          </ng-template>
       </div>
     </div>
   </div>

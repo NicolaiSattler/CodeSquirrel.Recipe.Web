@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription} from 'rxjs';
@@ -9,13 +9,12 @@ import { ProductStateService } from '../product-state.service';
 import { ProductNameValidator } from './product-name-validator.directive';
 
 @Component({
-  templateUrl: './product-details.component.html',
-  styleUrls: ['./product-details.component.css'],
+  templateUrl: './product-detail.component.html',
+  styleUrls: ['./product-detail.component.css'],
   host: {class: 'container'}
 })
 
-export class ProductDetailsComponent implements OnInit, AfterViewInit {
-
+export class ProductDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   private nameValueControlSub: Subscription;
   private typeValueControlSub: Subscription;
   private productSub: Subscription;
@@ -30,15 +29,15 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   public productTypes$: Observable<IKeyValue[]>;
   public nameErrorMessage: string;
   public typeErrorMessage: string;
-  public productForm: FormGroup;
+  public productFormGroup: FormGroup;
   public get nameControl(): AbstractControl {
-    return this.productForm.get('Name');
+    return this.productFormGroup.get('Name');
   }
   public get typeControl(): AbstractControl {
-    return this.productForm.get('Type');
+    return this.productFormGroup.get('Type');
   }
   public get perishabledControl(): AbstractControl {
-    return this.productForm.get('Perishable');
+    return this.productFormGroup.get('Perishable');
   }
   public get nameValidationMessages(): any {
     return {
@@ -53,28 +52,49 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
       undefined: 'Please supply a product type.'
     };
   }
+  public get saveButtonTooltip(): string {
+    return "Opslaan naar de database.";
+  }
+  public get saveButtonDisabledTooltip(): string {
+    return "Uitgeschakeld totdat het formulier valide is.";
+  }
+
 
   constructor(private $route: ActivatedRoute,
               private $router: Router,
               private $formBuilder: FormBuilder,
               private nameValidator: ProductNameValidator,
-              private productService: ProductStateService) {
+              private stateService: ProductStateService) {
   }
 
   private initialize(product: IProduct, isNew: boolean) {
     this.product = product;
     this.isNew = isNew;
-    this.productForm.setValue({
+    this.productFormGroup.setValue({
       Name: this.product.Name,
       Type: this.product.Type,
       Perishable: this.product.Perishable
     });
 
     if (isNew) {
-      this.pageTitle = 'Create a new product.';
+      this.pageTitle = 'Maak een nieuwe product aan';
     } else {
-      this.pageTitle = 'Product Details';
+      this.pageTitle = 'Product gegevens';
     }
+  }
+  private initializeForm(): void {
+    this.productFormGroup = this.$formBuilder.group({
+      Name: [null, { asyncValidators: [this.nameValidator.validate.bind(this.nameValidator)], updateOn: 'blur'}],
+      Type: [null, [Validators.required, this.undefinedProductTypeValidator()]],
+      Perishable: [null, [Validators.nullValidator]]
+    });
+
+    this.nameControl.setValidators([Validators.required, Validators.maxLength(256)]);
+    this.nameValueControlSub = this.nameControl.valueChanges
+      .pipe(debounceTime(200))
+      .subscribe(value => this.setNameErrorMessage());
+    this.typeValueControlSub = this.typeControl.valueChanges
+      .subscribe(value => this.setTypeErrorMessage());
   }
   private setNameErrorMessage(): void {
     this.nameErrorMessage = '';
@@ -103,14 +123,14 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
     };
   }
   public onSave(): void {
-    if (this.productForm.valid && this.productForm.dirty) {
-      const p = { ...this.product, ...this.productForm.value };
+    if (this.productFormGroup.valid && this.productFormGroup.dirty) {
+      const p = { ...this.product, ...this.productFormGroup.value };
 
-      this.saveProductSub = this.productService.saveProduct(p, this.isNew)
+      this.saveProductSub = this.stateService.saveProduct$(p, this.isNew)
         .subscribe(result => {
           if (result) {
             this.state = 'The product has been saved.';
-            this.productForm.reset();
+            this.productFormGroup.reset();
             this.navigateToProductList();
           } else  {
             this.state = 'The product could not be saved.';
@@ -122,7 +142,7 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
   }
   public onRemove(): void {
     if (confirm('Are you sure you want to the delete this item?')) {
-      this.deleteProductSub = this.productService.deleteProduct(this.product.UniqueID)
+      this.deleteProductSub = this.stateService.deleteProduct$(this.product.UniqueID)
         .subscribe(() => this.navigateToProductList());
     }
   }
@@ -135,29 +155,19 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
       const id = params.get('id');
       const isNew = params.get('isnew') === 'true';
 
-      this.productTypes$ = this.productService.getProductTypes();
-      this.productForm = this.$formBuilder.group({
-        Name: [null, { asyncValidators: [this.nameValidator.validate.bind(this.nameValidator)], updateOn: 'blur'}],
-        Type: [null, [Validators.required, this.undefinedProductTypeValidator()]],
-        Perishable: [null, [Validators.nullValidator]]
-      });
-
-      this.nameControl.setValidators([Validators.required, Validators.maxLength(256)]);
-      this.nameValueControlSub = this.nameControl.valueChanges
-        .pipe(debounceTime(200))
-        .subscribe(value => this.setNameErrorMessage());
-      this.typeValueControlSub = this.typeControl.valueChanges
-        .subscribe(value => this.setTypeErrorMessage());
+      this.productTypes$ = this.stateService.getProductTypes$();
+      
+      this.initializeForm();
 
       if (isNew) {
-        this.productSub = this.productService.createProduct()
+        this.productSub = this.stateService.createProduct$()
           .subscribe((product: IProduct) => {
             this.initialize(product, isNew);
           });
       } else {
-        this.productSub = this.productService.getProductByID(id)
+        this.productSub = this.stateService.getProductByID$(id)
           .subscribe((product: IProduct) => {
-            this.productService.editProduct = product;
+            this.stateService.editProduct = product;
             this.initialize(product, isNew);
           });
       }
@@ -171,7 +181,8 @@ export class ProductDetailsComponent implements OnInit, AfterViewInit {
       this.perishabledControl.updateValueAndValidity();
     }
   }
-  OnDestroy(): void {
+  
+  ngOnDestroy(): void {
     if (this.nameValueControlSub) {
       this.nameValueControlSub.unsubscribe();
     }

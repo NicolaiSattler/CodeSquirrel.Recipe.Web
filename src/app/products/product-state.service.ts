@@ -5,10 +5,9 @@ import { IProduct, Product } from '../model/product';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
-@Injectable({
-    providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class ProductStateService {
+
     private productCollection: IProduct[];
     private typeCollection: IKeyValue[];
 
@@ -30,7 +29,7 @@ export class ProductStateService {
         return false;
     }
 
-    public getProductTypes(): Observable<IKeyValue[]> {
+    public getProductTypes$(): Observable<IKeyValue[]> {
         if (this.typeCollection == null) {
             return this.service.getProductTypes().pipe(tap(data => this.typeCollection = data));
         }
@@ -45,7 +44,7 @@ export class ProductStateService {
             observer.complete();
         });
     }
-    public getProductCollection(): Observable<IProduct[]> {
+    public getProductCollection$(): Observable<IProduct[]> {
         if (this.productCollection == null) {
             return this.service.get()
                 .pipe(tap(data => this.productCollection = data));
@@ -61,9 +60,13 @@ export class ProductStateService {
             observer.complete();
         });
     }
-    public getProductByID(id: string): Observable<IProduct> {
-        const result = this.productCollection.find(i => i.UniqueID === id);
-        return of(result);
+    public getProductByID$(id: string): Observable<IProduct> {
+        if (this.productCollection && this.productCollection.length > 0) {
+            const result = this.productCollection.find(i => i.UniqueID === id);
+            return of(result);
+        } else {
+            return this.service.getByID(id);
+        }
     }
     public isValidProductName$(name: string): Observable<boolean> {
         const result = this.isValidateProductName(name);
@@ -75,15 +78,15 @@ export class ProductStateService {
         }
         return this.productCollection.find(p => p.Name === name && p.UniqueID !== this.editProduct.UniqueID) == null;
     }
-    public createProduct(): Observable<IProduct> {
+    public createProduct$(): Observable<IProduct> {
         return this.service.create();
     }
-    public deleteProduct(uniqueID: string): Observable<{}> {
+    public deleteProduct$(uniqueID: string): Observable<{}> {
         return this.service.delete(uniqueID).pipe(
             tap(() => this.removeItem(uniqueID))
         );
     }
-    public saveProduct(product: Product, isNew: boolean): Observable<Product> {
+    public saveProduct$(product: Product, isNew: boolean): Observable<Product> {
         if (isNew) {
             return this.service.insert(product).pipe(tap(() =>  this.productCollection.push(product)));
         } else {

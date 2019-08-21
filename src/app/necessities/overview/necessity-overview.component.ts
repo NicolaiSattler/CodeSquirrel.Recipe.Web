@@ -24,6 +24,7 @@ export class NecessityOverviewComponent implements OnInit, AfterViewInit, OnDest
   private queryParamSub: Subscription;
 
   public pageTitle: string;
+  public stateMessage: string;
   public isReady: boolean;
   public isLoading: boolean;
   public necessityCollection$: Observable<INecessity[]>;
@@ -57,7 +58,10 @@ export class NecessityOverviewComponent implements OnInit, AfterViewInit, OnDest
             return nameMatch;
         })));
   }
-
+  
+  onCreateNecessity(): void {
+    this.$router.navigate(['/necessities', 0, { isnew: true } ], { queryParams : { filterBy: this.needle } });
+  }
   onSort({column, direction}: SortEvent): void {
     this.headers.forEach(header => {
       if (header.sortable !== column) {
@@ -82,7 +86,7 @@ export class NecessityOverviewComponent implements OnInit, AfterViewInit, OnDest
     let needle = '';
 
     this.queryParamSub = this.$acitvatedRoute.queryParamMap.subscribe(m => { needle = m.get('filterBy'); });
-    this.necessityCollection$ = this.necessityService.getNecessityCollection();
+    this.necessityCollection$ = this.necessityService.getNecessityCollection$();
     this.filterCollection$ = this.necessityCollection$;
 
     if (needle != null) {

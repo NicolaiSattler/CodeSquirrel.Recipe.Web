@@ -106,10 +106,10 @@ export class ProductOverviewComponent implements OnInit, AfterViewInit, OnDestro
     ngAfterViewInit(): void {
         let needle = '';
         this.queryParamSub = this.$activatedRoute.queryParamMap.subscribe(m => { needle = m.get('filterBy'); });
-        this.productTypeSub = this.productService.getProductTypes()
+        this.productTypeSub = this.productService.getProductTypes$()
                                                  .subscribe((result) => {
                 this.productTypes = result;
-                this.productCollection$ = this.productService.getProductCollection();
+                this.productCollection$ = this.productService.getProductCollection$();
                 this.filterProductCollection$ = this.productCollection$;
                 if (needle !== null) {
                     this.needle = needle;

@@ -3,14 +3,14 @@
     {{pageTitle}}
   </div>
   <div class='card-body'>
-    <form [formGroup]="productForm" (ngSubmit)="onSave()">
+    <form [formGroup]="productFormGroup" (ngSubmit)="onSave()">
       <div class="btn-toolbar mb-3 justify-content-between" role="toolbar">
         <div class="btn-group btn-group-sm" role="group">
           <button *ngIf="isNew === false" type="button" class="btn btn-primary" (click)='onRemove()'>
             Verwijderen
           </button>
-          <button type="submit" class="btn btn-primary" [title]="productForm.dirty ? 'Product opslaan.' : 'Uitgeschakeld totdat het formulier valide is.'"
-            [disabled]="!productForm.dirty">
+          <button type="submit" class="btn btn-primary" [title]="productFormGroup.dirty ? saveButtonTooltip : saveButtonDisabledTooltip"
+            [disabled]="!productFormGroup.dirty">
             Opslaan
           </button>
         </div>
@@ -20,7 +20,7 @@
           Naam
         </label>
         <div class="col-sm-10">
-          <input id="name" type="text" class="form-control" placeholder="Name.." formControlName="Name"
+          <input id="name" type="text" class="form-control" placeholder="Naam..." formControlName="Name"
             [ngClass]="{'is-valid': nameControl.dirty && nameControl.valid, 'is-invalid': nameControl.dirty && !nameControl.valid }" />
           <small class="text-danger form-text">
             {{ nameErrorMessage }}

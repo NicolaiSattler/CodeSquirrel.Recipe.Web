@@ -7,13 +7,13 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { SortableTableHeaderDirective } from '../shared/directive/sortable-table-header.directive';
 
 import { ProductOverviewComponent } from './overview/product-overview.component';
-import { ProductDetailsComponent } from './detail/product-details.component';
+import { ProductDetailComponent } from './detail/product-detail.component';
 import { ProductRoutingModule } from './product-routing.module';
 
 @NgModule({
   declarations: [
     ProductOverviewComponent,
-    ProductDetailsComponent,
+    ProductDetailComponent,
     SortableTableHeaderDirective,
   ],
   imports: [

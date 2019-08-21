@@ -19,12 +19,12 @@ import { CustomPreloadStrategy } from './shared/service/custom-preload-stratagy.
         },
         {
           path: 'products',
-          loadChildren: './products/product.module#ProductModule',
+          loadChildren: () => import('./products/product.module').then(m => m.ProductModule),
           data: { preload: true }
         },
         {
           path: 'necessities',
-          loadChildren: './necessities/necessity.module#NecessityModule',
+          loadChildren: () => import('./necessities/necessity.module').then(m => m.NecessityModule),
           data: { preload: true }
         },
         {
