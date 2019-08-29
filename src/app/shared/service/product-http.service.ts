@@ -43,19 +43,19 @@ export class ProductHttpService {
 
         return throwError(errorMessage);
     }
-    public create(): Observable<Product> {
+    public create(): Observable<IProduct> {
         const url = `${this.rootUrl}${this.getCreateUrl}`;
-        return this.$client.get<Product>(url)
+        return this.$client.get<IProduct>(url)
                            .pipe( catchError(this.handleError));
     }
-    public get(): Observable<Product[]> {
+    public get(): Observable<IProduct[]> {
         const url = `${this.rootUrl}${this.getAllUrl}`;
-        return this.$client.get<Product[]>(url)
+        return this.$client.get<IProduct[]>(url)
                            .pipe(catchError(this.handleError));
     }
-    public getByID(id: string): Observable<Product> {
+    public getByID(id: string): Observable<IProduct> {
         const url = `${this.rootUrl}${this.getByIDUrl}`;
-        return this.$client.get<Product>(url, { params: { 'productID' : id} })
+        return this.$client.get<IProduct>(url, { params: { 'productID' : id} })
                            .pipe(catchError(this.handleError));
     }
     public getProductTypes(): Observable<IKeyValue[]> {
@@ -63,14 +63,14 @@ export class ProductHttpService {
         return this.$client.get<IKeyValue[]>(url)
                            .pipe(catchError(this.handleError));
     }
-    public insert(product: Product): Observable<Product> {
+    public insert(product: IProduct): Observable<IProduct> {
         const url = `${this.rootUrl}${this.insertUrl}`;
         return this.$client.post<Product>(url, product)
                            .pipe(catchError(this.handleError));
     }
-    public update(product: Product): Observable<Product> {
+    public update(product: IProduct): Observable<IProduct> {
         const url = `${this.rootUrl}${this.updateUrl}`;
-        return this.$client.post<Product>(url, product)
+        return this.$client.post<IProduct>(url, product)
                            .pipe(catchError(this.handleError));
     }
     public delete(uniqueID: string): Observable<{}> {

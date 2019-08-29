@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { Necessity } from 'src/app/model/necessity';
+import { Necessity, INecessity } from 'src/app/model/necessity';
 
 
 @Injectable({ providedIn: 'root' })
@@ -54,12 +54,12 @@ export class NecessityHttpService {
         return this.$client.get<Necessity>(url, { params: { 'necessityID' : id} })
                            .pipe(catchError(this.handleError));
     }
-    public insert(necessity: Necessity): Observable<Necessity> {
+    public insert(necessity: INecessity): Observable<INecessity> {
         const url = `${this.rootUrl}${this.insertUrl}`;
         return this.$client.post<Necessity>(url, necessity)
                            .pipe(catchError(this.handleError));
     }
-    public update(necessity: Necessity): Observable<Necessity> {
+    public update(necessity: INecessity): Observable<INecessity> {
         const url = `${this.rootUrl}${this.updateUrl}`;
         return this.$client.post<Necessity>(url, necessity)
                            .pipe(catchError(this.handleError));

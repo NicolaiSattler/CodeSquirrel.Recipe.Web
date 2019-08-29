@@ -86,17 +86,16 @@ export class ProductStateService {
             tap(() => this.removeItem(uniqueID))
         );
     }
-    public saveProduct$(product: Product, isNew: boolean): Observable<Product> {
+    public saveProduct$(product: IProduct, isNew: boolean): Observable<IProduct> {
         if (isNew) {
             return this.service.insert(product).pipe(tap(() =>  this.productCollection.push(product)));
         } else {
-            return this.service.update(product).pipe(
-                tap(() => {
-                    if (this.removeItem(product.UniqueID)) {
-                        this.productCollection.push(product);
-                    }
-                })
-            );
+            return this.service.update(product)
+                               .pipe(tap(() => {
+                                    if (this.removeItem(product.UniqueID)) {
+                                        this.productCollection.push(product);
+                                    }
+                                }));
         }
     }
 }

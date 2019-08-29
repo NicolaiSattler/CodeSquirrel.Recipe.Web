@@ -20,14 +20,24 @@ export class NecessityOverviewComponent implements OnInit, AfterViewInit, OnDest
   @ViewChildren(SortableTableHeaderDirective) headers: QueryList<SortableTableHeaderDirective>;
 
   private _needle: string;
+  private _isLoading: boolean;
   private _filterCollection$: Observable<INecessity[]>;
   private queryParamSub: Subscription;
 
   public pageTitle: string;
   public stateMessage: string;
   public isReady: boolean;
-  public isLoading: boolean;
   public necessityCollection$: Observable<INecessity[]>;
+  public get isLoading(): boolean {
+    return this._isLoading;
+  }
+  public set isLoading(v: boolean) {
+    this.setLoading(v);
+
+    setTimeout(() => {
+      this._isLoading = v;
+    });
+  }
   public get filterCollection$(): Observable<INecessity[]> {
     return this._filterCollection$;
   }
@@ -57,6 +67,11 @@ export class NecessityOverviewComponent implements OnInit, AfterViewInit, OnDest
             const nameMatch = n.Name.toLocaleLowerCase().indexOf(cleanNeedle) !== -1;
             return nameMatch;
         })));
+  }
+  private setLoading(isloading: boolean): void {
+    setTimeout(() => {
+      this.loaderService.show(isloading);
+    });
   }
   
   onCreateNecessity(): void {

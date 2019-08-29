@@ -35,7 +35,10 @@ export class ProductOverviewComponent implements OnInit, AfterViewInit, OnDestro
     }
     public set isLoading(v: boolean) {
         this.setLoader(v);
-        this._isLoading = v;
+
+        setTimeout(() => {
+            this._isLoading = v;
+        });
     }
     public get filterProductCollection$(): Observable<IProduct[]> {
         return this._filterProductCollection$;

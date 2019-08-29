@@ -12,11 +12,13 @@ import { NecessityDetailComponent } from './detail/necessity-detail.component';
             {
                 path: '',
                 component: NecessityOverviewComponent
+                //TODO: add Guard
             },
             {
                 path: ':id',
                 component: NecessityDetailComponent
-              }
+                //TODO: add Guard
+            }
         ])
     ],
     exports: [

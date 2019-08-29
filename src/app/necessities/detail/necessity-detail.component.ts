@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { FormBuilder, FormGroup, AbstractControl, Validators, ValidatorFn } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, AbstractControl, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { NecessityStateService } from '../necessity-state.service';
 import { INecessity } from 'src/app/model/necessity';
@@ -8,11 +8,14 @@ import { INecessity } from 'src/app/model/necessity';
 @Component({
   selector: 'app-necessity-detail',
   templateUrl: './necessity-detail.component.html',
-  styleUrls: ['./necessity-detail.component.css']
+  styleUrls: ['./necessity-detail.component.css'],
+  host: { class: 'container'}
 })
 export class NecessityDetailComponent implements OnInit, OnDestroy, AfterViewInit {
   private paramSub: Subscription;
   private necessitySub: Subscription;
+  private saveNecessitySub: Subscription;
+  private deleteSub: Subscription;
 
   public pageTitle: string;
   public state: string;
@@ -66,14 +69,35 @@ export class NecessityDetailComponent implements OnInit, OnDestroy, AfterViewIni
       Electrical: [null, [Validators.nullValidator]]
     });
   }
+  private navigateToNecessityOverview(): void {
+    this.$router.navigate(['/necessities'], { queryParamsHandling: 'preserve' });
+  }
   
   public onSave(): void {
+    if (this.necessityFormGroup.valid && this.necessityFormGroup.dirty) {
+      const n = { ...this.necessity, ...this.necessityFormGroup.value }
+
+      this.saveNecessitySub = this.stateService.saveNecessity$(n, this.isNew)
+        .subscribe(result => {
+          if (result) {
+            this.state = 'The necessity has been saved.';
+            this.necessityFormGroup.reset();
+            this.navigateToNecessityOverview();
+          } else {
+            this.state = 'The necessity could not be saved.';
+          }
+        }, (error: any) => this.state = <string>error
+      );
+    }
   }
   public onRemove(): void {
-
+    if (confirm('Are you sure you want to the delete this item?')) {
+      this.deleteSub = this.stateService.deleteNecessity$(this.necessity.UniqueID)
+        .subscribe(() => this.navigateToNecessityOverview());
+    }
   }
   public onBack(): void {
-
+    this.navigateToNecessityOverview();
   }
 
   ngOnInit() {
@@ -109,6 +133,10 @@ export class NecessityDetailComponent implements OnInit, OnDestroy, AfterViewIni
     }
 
     if (this.necessitySub) {
+      this.necessitySub.unsubscribe();
+    }
+
+    if (this.saveNecessitySub) {
       this.necessitySub.unsubscribe();
     }
   }
